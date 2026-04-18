@@ -1,0 +1,248 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --eco-primary: #22c55e;
+  --eco-primary-hover: #16a34a;
+  --eco-primary-soft: #34d399;
+  --eco-accent: #06b6d4;
+  --eco-bg: #06121c;
+  --eco-surface: #0b1b2b;
+  --eco-elevated: #102235;
+  --eco-surface-soft: rgba(11, 27, 43, 0.78);
+  --eco-text: #f8fafc;
+  --eco-text-secondary: #cbd5e1;
+  --eco-text-muted: #94a3b8;
+  --eco-danger: #ef4444;
+  --eco-warning: #f59e0b;
+  --eco-info: #3b82f6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: "ss01" 1, "cv05" 1, "cv11" 1;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 24%),
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.12), transparent 22%),
+    radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.07), transparent 30%),
+    linear-gradient(180deg, #0b1b2b 0%, #081522 24%, #06121c 100%);
+}
+
+@layer base {
+  * {
+    @apply border-slate-200/10;
+  }
+
+  body {
+    @apply min-h-screen overflow-x-hidden text-slate-100 antialiased transition-colors duration-300 selection:bg-emerald-400/30 selection:text-white;
+  }
+
+  ::selection {
+    @apply bg-emerald-400/20 text-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+    letter-spacing: -0.04em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.35);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.72), rgba(34, 211, 238, 0.5));
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-[82rem] px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-16;
+  }
+
+  .app-shell-main {
+    @apply relative min-h-[calc(100vh-5.75rem)] pb-10 transition-[padding] duration-300;
+  }
+
+  .app-shell-main-with-sidebar {
+    @apply xl:pl-[19.5rem];
+  }
+
+  .section-kicker {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-emerald-300/90 backdrop-blur;
+  }
+
+  .section-title {
+    @apply mt-6 text-3xl font-semibold leading-[1.02] tracking-tight text-white sm:text-[2.65rem] lg:text-[3.45rem];
+  }
+
+  .section-copy {
+    @apply mt-5 max-w-3xl text-[0.98rem] leading-8 text-slate-300 sm:text-lg;
+  }
+
+  .glass-card {
+    @apply rounded-[30px] border border-white/10 bg-white/[0.06] p-5 text-white shadow-[0_28px_90px_rgba(2,6,23,0.32)] backdrop-blur-2xl sm:p-8;
+  }
+
+  .card {
+    @apply rounded-[30px] border border-white/10 bg-[rgba(16,34,53,0.92)] p-5 text-white shadow-[0_22px_70px_rgba(2,6,23,0.22)] backdrop-blur-xl sm:p-8;
+  }
+
+  .surface-panel {
+    @apply rounded-[32px] border border-white/10 bg-[rgba(11,27,43,0.72)] shadow-[0_28px_90px_rgba(2,6,23,0.42)] backdrop-blur-2xl;
+  }
+
+  .surface-panel-soft {
+    @apply rounded-[28px] border border-white/10 bg-white/[0.045] shadow-[0_22px_70px_rgba(2,6,23,0.3)] backdrop-blur-2xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full bg-[#22C55E] px-5 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_18px_38px_rgba(34,197,94,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#16A34A] hover:shadow-[0_22px_44px_rgba(34,197,94,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C] disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-5 py-3.5 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-300/30 hover:bg-white/[0.16] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C] disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .btn-light {
+    @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-[rgba(255,255,255,0.12)] bg-slate-900/80 px-5 py-3.5 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400/60 hover:bg-slate-800/90 hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C] disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .btn-ghost {
+    @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-slate-300 transition duration-300 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C];
+  }
+
+  .input {
+    @apply w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3.5 text-white outline-none transition duration-200 placeholder:text-slate-500 focus:border-emerald-400/80 focus:ring-4 focus:ring-emerald-400/10;
+  }
+
+  .auth-input {
+    @apply w-full rounded-2xl border border-white/10 bg-slate-900/80 py-3.5 pl-12 pr-12 text-white outline-none transition duration-200 placeholder:text-slate-500 focus:border-emerald-400/80 focus:ring-4 focus:ring-emerald-400/10;
+  }
+
+  .label {
+    @apply mb-2.5 block text-sm font-medium text-slate-200;
+  }
+
+  .auth-icon {
+    @apply pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500;
+  }
+
+  .auth-action {
+    @apply absolute right-4 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 transition hover:bg-white/[0.06] hover:text-white;
+  }
+
+  .nav-link {
+    @apply inline-flex min-h-[2.75rem] shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-medium text-slate-300 transition duration-300 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C];
+  }
+
+  .nav-link-active {
+    @apply bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_24px_rgba(2,6,23,0.2)];
+  }
+
+  .sidebar-shell {
+    @apply fixed bottom-5 left-5 top-[6.1rem] z-40 hidden w-[17.25rem] flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[rgba(15,23,42,0.72)] shadow-[0_26px_90px_rgba(2,6,23,0.42)] backdrop-blur-2xl xl:flex;
+  }
+
+  .sidebar-link {
+    @apply flex min-h-[2.95rem] items-center gap-3 rounded-[22px] px-4 py-3 text-sm font-medium text-slate-300 transition duration-300 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C];
+  }
+
+  .sidebar-link-active {
+    @apply bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_32px_rgba(2,6,23,0.18)];
+  }
+
+  .sidebar-section-title {
+    @apply px-4 text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-slate-500;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold capitalize tracking-wide;
+  }
+
+  .stat-card {
+    @apply rounded-[28px] border border-white/10 bg-white/[0.055] p-5 text-white shadow-[0_22px_60px_rgba(2,6,23,0.24)] backdrop-blur-2xl sm:p-6;
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .hero-orb {
+    @apply absolute rounded-full blur-3xl;
+  }
+
+  .feature-icon-wrap {
+    @apply flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] text-emerald-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)];
+  }
+
+  .home-section {
+    @apply page-shell relative;
+  }
+
+  .map-card {
+    @apply overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/75 shadow-[0_20px_50px_rgba(2,6,23,0.2)];
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-white via-emerald-100 to-cyan-200 bg-clip-text text-transparent;
+  }
+
+  .mask-fade-bottom {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  background: #e2e8f0;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+}

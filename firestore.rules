@@ -1,0 +1,111 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userRole() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? userDoc().data.role
+        : null;
+    }
+
+    function isAdmin() {
+      return userRole() == "admin";
+    }
+
+    function isRestaurant() {
+      return userRole() == "restaurant";
+    }
+
+    function isCharity() {
+      return userRole() == "charity";
+    }
+
+    function restaurantOwnsDonation(donationId) {
+      return exists(/databases/$(database)/documents/donations/$(donationId)) &&
+        get(/databases/$(database)/documents/donations/$(donationId)).data.restaurantId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isSignedIn() &&
+        (request.auth.uid == userId || isAdmin()) &&
+        (
+          isAdmin() ||
+          (
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.createdAt == resource.data.createdAt &&
+            request.resource.data.role == resource.data.role
+          )
+        );
+      allow delete: if isAdmin();
+    }
+
+    match /donations/{donationId} {
+      allow read: if isSignedIn();
+      allow create: if isRestaurant() && request.resource.data.restaurantId == request.auth.uid;
+      allow update: if isAdmin() ||
+        (
+          isRestaurant() &&
+          resource.data.restaurantId == request.auth.uid &&
+          request.resource.data.restaurantId == resource.data.restaurantId &&
+          request.resource.data.createdAt == resource.data.createdAt
+        );
+      allow delete: if isAdmin() ||
+        (isRestaurant() && resource.data.restaurantId == request.auth.uid);
+    }
+
+    match /requests/{requestId} {
+      allow read: if isAdmin() ||
+        (isCharity() && resource.data.charityId == request.auth.uid) ||
+        (isRestaurant() && restaurantOwnsDonation(resource.data.donationId));
+
+      allow create: if isCharity() && request.resource.data.charityId == request.auth.uid;
+
+      allow update: if isAdmin() ||
+        (
+          isRestaurant() &&
+          restaurantOwnsDonation(resource.data.donationId) &&
+          request.resource.data.donationId == resource.data.donationId &&
+          request.resource.data.charityId == resource.data.charityId &&
+          request.resource.data.message == resource.data.message &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.charityName == resource.data.charityName
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /ads/{adId} {
+      allow read: if
+        (resource.data.status == "published" && resource.data.paymentStatus == "paid") ||
+        (isSignedIn() && (isAdmin() || resource.data.restaurantId == request.auth.uid));
+
+      allow create: if isRestaurant() &&
+        request.resource.data.restaurantId == request.auth.uid &&
+        request.resource.data.status == "pending" &&
+        request.resource.data.paymentStatus == "pending";
+
+      allow update: if isAdmin() ||
+        (
+          isRestaurant() &&
+          resource.data.restaurantId == request.auth.uid &&
+          request.resource.data.restaurantId == resource.data.restaurantId &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.paymentStatus == resource.data.paymentStatus
+        );
+
+      allow delete: if isAdmin() ||
+        (isRestaurant() && resource.data.restaurantId == request.auth.uid);
+    }
+  }
+}
