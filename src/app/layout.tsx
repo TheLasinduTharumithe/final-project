@@ -11,7 +11,7 @@ const manrope = Manrope({
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://final-project-three-lime-79.vercel.app");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
