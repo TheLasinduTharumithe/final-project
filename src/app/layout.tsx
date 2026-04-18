@@ -10,7 +10,7 @@ const manrope = Manrope({
 });
 
 // ✅ FIX: use localhost for development
-const siteUrl = "http://localhost:3000";
+const siteUrl = "https://final-project-flax-xi.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
