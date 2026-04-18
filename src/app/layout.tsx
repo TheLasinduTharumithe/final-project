@@ -10,7 +10,7 @@ const manrope = Manrope({
 });
 
 // 🔥 Direct domain (NO ENV)
-const siteUrl = "thelasindutharumithe-final-project.vercel.app";
+const siteUrl = "https://final-project-three-lime-79.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
