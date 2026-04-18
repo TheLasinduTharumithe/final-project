@@ -9,23 +9,24 @@ const manrope = Manrope({
   variable: "--font-sans"
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://final-project-three-lime-79.vercel.app");
+// 🔥 Direct domain (NO ENV)
+const siteUrl = "https://final-project-three-lime-79.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "EcoPlate",
-  description: "Reduce food waste and connect restaurants with charities through one modern donation platform.",
+  description:
+    "Reduce food waste and connect restaurants with charities through one modern donation platform.",
+
   openGraph: {
     title: "EcoPlate",
     description:
       "Reduce food waste and connect restaurants with charities through one modern donation platform.",
-    url: "/",
+    url: siteUrl, // ✅ FIXED (was "/")
     siteName: "EcoPlate",
     images: [
       {
-        url: "/og-image.jpg",
+        url: `${siteUrl}/og-image.jpg`, // ✅ FULL URL (IMPORTANT)
         width: 1200,
         height: 630,
         alt: "EcoPlate"
@@ -34,16 +35,19 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website"
   },
+
   twitter: {
     card: "summary_large_image",
     title: "EcoPlate",
     description:
       "Reduce food waste and connect restaurants with charities through one modern donation platform.",
-    images: ["/og-image.jpg"]
+    images: [`${siteUrl}/og-image.jpg`] // ✅ FULL URL
   }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({
+  children
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
       <body className={`${manrope.variable} min-h-screen`}>
