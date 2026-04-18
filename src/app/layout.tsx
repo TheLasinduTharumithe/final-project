@@ -6,11 +6,11 @@ import "@/styles/globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-sans"
+  variable: "--font-sans",
 });
 
-// 🔥 Direct domain (NO ENV)
-const siteUrl = " ";
+// ✅ FIX: use localhost for development
+const siteUrl = "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -22,18 +22,18 @@ export const metadata: Metadata = {
     title: "EcoPlate",
     description:
       "Reduce food waste and connect restaurants with charities through one modern donation platform.",
-    url: siteUrl, // ✅ FIXED (was "/")
+    url: siteUrl,
     siteName: "EcoPlate",
     images: [
       {
-        url: `${siteUrl}/og-image.jpg`, // ✅ FULL URL (IMPORTANT)
+        url: `${siteUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "EcoPlate"
-      }
+        alt: "EcoPlate",
+      },
     ],
     locale: "en_US",
-    type: "website"
+    type: "website",
   },
 
   twitter: {
@@ -41,12 +41,12 @@ export const metadata: Metadata = {
     title: "EcoPlate",
     description:
       "Reduce food waste and connect restaurants with charities through one modern donation platform.",
-    images: [`${siteUrl}/og-image.jpg`] // ✅ FULL URL
-  }
+    images: [`${siteUrl}/og-image.jpg`],
+  },
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
