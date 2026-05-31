@@ -7,44 +7,50 @@ interface AdCardProps {
 
 export default function AdCard({ ad, showMeta = true }: AdCardProps) {
   return (
-    <div className="card overflow-hidden p-0">
+    <article className="card overflow-hidden p-0">
       {ad.imageUrl ? (
         <img
           src={ad.imageUrl}
           alt={ad.title}
-          className="h-56 w-full object-cover"
+          className="aspect-[16/9] w-full object-cover"
           loading="lazy"
         />
       ) : (
-        <div className="flex h-56 w-full items-center justify-center bg-[rgba(255,255,255,0.04)] text-sm text-slate-400">
+        <div className="flex aspect-[16/9] w-full items-center justify-center bg-[#F8F6F0] text-sm text-[#6B7280]">
           Advertisement image unavailable
         </div>
       )}
 
-      <div className="space-y-4 p-6">
+      <div className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+            <p className="page-eyebrow">
               Restaurant Promotion
             </p>
-            <h3 className="mt-2 text-xl font-semibold text-white">{ad.title}</h3>
+            <h3 className="mt-2 text-lg font-semibold leading-snug text-[#1F2937]">{ad.title}</h3>
           </div>
-          {showMeta ? <span className="status-badge border-cyan-400/25 bg-cyan-500/10 text-cyan-300">{ad.status}</span> : null}
+          {showMeta ? (
+            <span className="status-badge border-[#2563EB]/30 bg-[#DBEAFE] text-[#1E40AF]">
+              {ad.status}
+            </span>
+          ) : null}
         </div>
 
-        <p className="text-sm leading-6 text-slate-300">{ad.description}</p>
+        <p className="text-sm leading-6 text-[#6B7280] line-clamp-4">{ad.description}</p>
 
-        <div className="grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-          <p>
-            <span className="font-medium text-white">Contact:</span> {ad.contactNumber}
-          </p>
+        <div className="grid gap-2 text-sm text-[#6B7280] sm:grid-cols-2">
+          <div className="meta-item">
+            <span className="meta-label">Contact</span>
+            <span className="meta-value">{ad.contactNumber}</span>
+          </div>
           {showMeta ? (
-            <p>
-              <span className="font-medium text-white">Payment:</span> {ad.paymentStatus}
-            </p>
+            <div className="meta-item">
+              <span className="meta-label">Payment</span>
+              <span className="meta-value">{ad.paymentStatus}</span>
+            </div>
           ) : null}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

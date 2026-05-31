@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import RequestCard from "@/components/RequestCard";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { DashboardSkeleton, MetricCard, PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { getDonationById } from "@/services/donations";
 import {
   approveRequest,
-  getRequestsByCharity,
   getRequestsForRestaurant,
-  rejectRequest
+  rejectRequest,
+  subscribeToRequestsByCharity
 } from "@/services/requests";
 import { getUserProfile } from "@/services/users";
 import type { AppUser, DonationRequest } from "@/types";
@@ -26,15 +27,14 @@ export default function RequestsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoadingId, setActionLoadingId] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   async function loadData(userProfile: AppUser) {
     setError("");
 
     try {
-      const requests =
-        userProfile.role === "restaurant"
-          ? await getRequestsForRestaurant(userProfile.id)
-          : await getRequestsByCharity(userProfile.id);
+      // Restaurant only uses loadData now
+      const requests = await getRequestsForRestaurant(userProfile.id);
 
       const mappedItems = await Promise.all(
         requests.map(async (request) => {
@@ -61,6 +61,8 @@ export default function RequestsPage() {
   useEffect(() => {
     let isActive = true;
 
+    let unsubRequests: (() => void) | null = null;
+
     const unsubscribe = subscribeToAuthState(async (firebaseUser) => {
       if (!firebaseUser || !isActive) {
         return;
@@ -74,12 +76,46 @@ export default function RequestsPage() {
       }
 
       setProfile(userProfile);
-      await loadData(userProfile);
+      
+      if (userProfile.approvalStatus !== "approved") {
+        setLoading(false);
+        return;
+      }
+
+      if (userProfile.role === "restaurant") {
+        await loadData(userProfile);
+      } else {
+        unsubRequests = subscribeToRequestsByCharity(userProfile.id, async (requests: DonationRequest[]) => {
+          if (!isActive) return;
+          try {
+            const mappedItems = await Promise.all(
+              requests.map(async (request) => {
+                const donation = await getDonationById(request.donationId);
+                return {
+                  request,
+                  donationName: donation?.foodName,
+                  charityName: request.charityName
+                };
+              })
+            );
+            if (isActive) {
+              setItems(mappedItems);
+              setLoading(false);
+            }
+          } catch (err) {
+            if (isActive) {
+              setError("Failed to load request details.");
+              setLoading(false);
+            }
+          }
+        });
+      }
     });
 
     return () => {
       isActive = false;
       unsubscribe();
+      if (unsubRequests) unsubRequests();
     };
   }, []);
 
@@ -119,59 +155,103 @@ export default function RequestsPage() {
     }
   }
 
+  const pendingCount = items.filter((item) => item.request.status === "pending").length;
+  const approvedCount = items.filter((item) => item.request.status === "approved").length;
+  const rejectedCount = items.filter((item) => item.request.status === "rejected").length;
+  const visibleItems =
+    statusFilter === "all"
+      ? items
+      : items.filter((item) => item.request.status === statusFilter);
+  const filterOptions = [
+    { value: "all", label: "All" },
+    { value: "pending", label: "Pending" },
+    { value: "approved", label: "Approved" },
+    { value: "rejected", label: "Rejected" }
+  ];
+
   return (
-    <ProtectedRoute allowedRoles={["restaurant", "charity"]}>
+    <ProtectedRoute allowedRoles={["restaurant", "charity"]} requireApproval={true}>
       <section className="page-shell">
-        <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
-            {profile?.role === "restaurant" ? "Incoming Requests" : "My Requests"}
-          </p>
-          <h1 className="mt-3 text-4xl font-semibold text-white">
-            {profile?.role === "restaurant"
-              ? "Review charity requests"
-              : "Track your donation requests"}
-          </h1>
-        </div>
+        <PageHeader
+          eyebrow={profile?.role === "restaurant" ? "Incoming requests" : "My requests"}
+          title={profile?.role === "restaurant" ? "Review charity requests" : "Track donation requests"}
+          description={
+            profile?.role === "restaurant"
+              ? "Approve or reject requests with enough context to avoid pickup confusion."
+              : "Monitor every request and open approved pickups when logistics are ready."
+          }
+        />
 
         {loading ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading requests...</p>
-          </div>
+          <DashboardSkeleton />
         ) : error ? (
-          <div className="glass-card">
-            <p className="text-slate-300">{error}</p>
-          </div>
+          <StatePanel title="Could not load requests" message={error} tone="error" />
         ) : items.length ? (
-          <div className="grid gap-6 lg:grid-cols-2">
-            {items.map((item) => (
-              <RequestCard
-                key={item.request.id}
-                request={item.request}
-                donationName={item.donationName}
-                charityName={profile?.role === "restaurant" ? item.charityName : undefined}
-                showActions={profile?.role === "restaurant"}
-                trackLink={
-                  profile?.role === "charity" && item.request.status === "approved"
-                    ? `/donations/${item.request.donationId}`
-                    : undefined
-                }
-                onApprove={
-                  actionLoadingId ? undefined : () => handleApprove(item.request.id)
-                }
-                onReject={
-                  actionLoadingId ? undefined : () => handleReject(item.request.id)
-                }
-              />
-            ))}
+          <div className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <MetricCard label="Pending" value={pendingCount} helper="Needs a decision" tone={pendingCount ? "attention" : "default"} />
+              <MetricCard label="Approved" value={approvedCount} helper="Ready for pickup" tone="info" />
+              <MetricCard label="Rejected" value={rejectedCount} helper="Closed without pickup" />
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-lg border border-[#E5E7EB] bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-[#6B7280]">
+                Showing {visibleItems.length} of {items.length} requests
+              </p>
+              <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0" aria-label="Request status filters">
+                {filterOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setStatusFilter(option.value)}
+                    className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 ${
+                      statusFilter === option.value
+                        ? "bg-[#2E7D32] text-white"
+                        : "bg-[#F3F4F1] text-[#6B7280] hover:bg-[#E5E7EB] hover:text-[#1F2937]"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {visibleItems.length ? (
+              <div className="grid gap-5 lg:grid-cols-2">
+                {visibleItems.map((item) => (
+                  <RequestCard
+                    key={item.request.id}
+                    request={item.request}
+                    donationName={item.donationName}
+                    charityName={profile?.role === "restaurant" ? item.charityName : undefined}
+                    showActions={profile?.role === "restaurant"}
+                    trackLink={
+                      profile?.role === "charity" && item.request.status === "approved"
+                        ? `/donations/${item.request.donationId}`
+                        : undefined
+                    }
+                    onApprove={
+                      actionLoadingId ? undefined : () => handleApprove(item.request.id)
+                    }
+                    onReject={
+                      actionLoadingId ? undefined : () => handleReject(item.request.id)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <StatePanel title="No requests match this filter" message="Change the status filter to see more request activity." />
+            )}
           </div>
         ) : (
-          <div className="glass-card">
-            <p className="text-slate-300">
-              {profile?.role === "restaurant"
-                ? "No requests have been received yet."
-                : "You have not sent any donation requests yet."}
-            </p>
-          </div>
+          <StatePanel
+            title={profile?.role === "restaurant" ? "No incoming requests" : "No requests sent"}
+            message={
+              profile?.role === "restaurant"
+                ? "Charity requests will appear here when they request your donations."
+                : "Browse available donations and send a request when one matches your needs."
+            }
+          />
         )}
       </section>
     </ProtectedRoute>

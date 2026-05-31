@@ -1,13 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import {
+  ArrowRight,
+  CalendarCheck2,
+  ClipboardList,
+  HandHeart,
+  Megaphone,
+  PackageCheck,
+  PlusCircle
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { DashboardSkeleton, MetricCard, PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { getAdsByRestaurant } from "@/services/ads";
-import { getAvailableDonations, getDonationsByRestaurant } from "@/services/donations";
-import { getRequestsByCharity, getRequestsForRestaurant } from "@/services/requests";
+import { getDonationsByRestaurant, subscribeToAvailableDonations } from "@/services/donations";
+import { getRequestsForRestaurant, subscribeToRequestsByCharity } from "@/services/requests";
 import { getUserProfile } from "@/services/users";
 import type { AppUser, Donation, DonationRequest } from "@/types";
 
@@ -53,6 +63,11 @@ export default function DashboardPage() {
           return;
         }
 
+        if (userProfile.approvalStatus !== "approved") {
+          setLoading(false);
+          return;
+        }
+
         if (userProfile.role === "restaurant") {
           const [donations, requests, ads] = await Promise.all([
             getDonationsByRestaurant(userProfile.id),
@@ -60,42 +75,47 @@ export default function DashboardPage() {
             getAdsByRestaurant(userProfile.id)
           ]);
 
-          if (!isActive) {
-            return;
-          }
+          if (!isActive) return;
 
           setRestaurantData({
             donations,
             requests,
             adsCount: ads.length
           });
+          setLoading(false);
         } else {
-          const [availableDonations, requests] = await Promise.all([
-            getAvailableDonations(),
-            getRequestsByCharity(userProfile.id)
-          ]);
-
-          if (!isActive) {
-            return;
-          }
-
-          setCharityData({
-            availableDonations,
-            requests
+          // Real-time for Charity
+          const unsubDonations = subscribeToAvailableDonations((availableDonations) => {
+            if (isActive) {
+              setCharityData((prev) => ({
+                availableDonations,
+                requests: prev?.requests || []
+              }));
+              setLoading(false);
+            }
           });
+          
+          const unsubRequests = subscribeToRequestsByCharity(userProfile.id, (requests) => {
+            if (isActive) {
+              setCharityData((prev) => ({
+                availableDonations: prev?.availableDonations || [],
+                requests
+              }));
+              setLoading(false);
+            }
+          });
+
+          // Cleanup listeners if the auth changes
+          return () => {
+            unsubDonations();
+            unsubRequests();
+          };
         }
       } catch (loadError) {
-        if (!isActive) {
-          return;
-        }
-
-        const message =
-          loadError instanceof Error ? loadError.message : "Could not load the dashboard.";
+        if (!isActive) return;
+        const message = loadError instanceof Error ? loadError.message : "Could not load the dashboard.";
         setError(message);
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     });
 
@@ -105,97 +125,213 @@ export default function DashboardPage() {
     };
   }, [router]);
 
+  const activeDonations =
+    restaurantData?.donations.filter((donation) => donation.status === "available").length || 0;
+  const pendingRequests =
+    restaurantData?.requests.filter((request) => request.status === "pending").length || 0;
+  const approvedPickups =
+    restaurantData?.requests.filter((request) => request.status === "approved").length || 0;
+  const recentRestaurantDonations = restaurantData?.donations.slice(0, 4) || [];
+  const recentRestaurantRequests = restaurantData?.requests.slice(0, 4) || [];
+
+  const availableDonations = charityData?.availableDonations.length || 0;
+  const approvedRequests =
+    charityData?.requests.filter((request) => request.status === "approved").length || 0;
+  const pendingCharityRequests =
+    charityData?.requests.filter((request) => request.status === "pending").length || 0;
+  const nearbyOpportunities = charityData?.availableDonations.slice(0, 4) || [];
+  const collectionSchedule =
+    charityData?.requests
+      .filter((request) => request.status === "approved")
+      .slice(0, 4) || [];
+
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requireApproval={true}>
       <section className="page-shell">
         {loading || !profile ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading your dashboard...</p>
-          </div>
+          <DashboardSkeleton />
         ) : error ? (
-          <div className="glass-card">
-            <p className="text-slate-300">{error}</p>
-          </div>
+          <StatePanel title="Dashboard unavailable" message={error} tone="error" />
         ) : profile.role === "restaurant" && restaurantData ? (
-          <div className="space-y-8">
-            <div className="glass-card">
-              <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Restaurant Dashboard</p>
-              <h1 className="mt-4 text-4xl font-semibold text-white">Welcome back, {profile.name}</h1>
-              <p className="mt-4 max-w-2xl text-slate-300">
-                Manage your live donations, review charity requests, and monitor your advertisement submissions from one place.
-              </p>
+          <div className="space-y-6">
+            <PageHeader
+              eyebrow="Restaurant workspace"
+              title={`Welcome back, ${profile.name}`}
+              description="Manage live donations, review charity requests, and keep advertisement submissions moving."
+              actions={
+                <>
+                  <Link href="/donations/new" className="btn-primary">
+                    <PlusCircle className="h-4 w-4" />
+                    New Donation
+                  </Link>
+                  <Link href="/requests" className="btn-secondary">
+                    <ClipboardList className="h-4 w-4" />
+                    Review Requests
+                  </Link>
+                </>
+              }
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Active donations" value={activeDonations} helper={`${restaurantData.donations.length} total posted`} tone="positive" />
+              <MetricCard label="Pending requests" value={pendingRequests} helper="Needs review from your team" tone={pendingRequests ? "attention" : "default"} />
+              <MetricCard label="Approved pickups" value={approvedPickups} helper="Ready for charity collection" tone="info" />
+              <MetricCard label="Advertisement status" value={restaurantData.adsCount} helper="Submitted restaurant ads" />
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
-              <div className="stat-card">
-                <p className="text-sm text-slate-300">My Donations</p>
-                <p className="mt-3 text-4xl font-semibold">{restaurantData.donations.length}</p>
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+              <div className="table-card">
+                <div className="border-b border-[#E5E7EB] px-4 py-3">
+                  <h2 className="font-semibold text-[#1F2937]">Recent donation activity</h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">Newest posts and current availability.</p>
+                </div>
+                {recentRestaurantDonations.length ? (
+                  recentRestaurantDonations.map((donation) => (
+                    <div key={donation.id} className="list-row">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-[#1F2937]">{donation.foodName}</p>
+                        <p className="mt-1 text-sm text-[#6B7280]">
+                          {donation.remainingQuantity}/{donation.totalQuantity} remaining - {donation.pickupLocation}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="status-badge border-[#E5E7EB] bg-[#F3F4F1] text-[#374151]">{donation.status}</span>
+                        <Link href={`/donations/${donation.id}`} className="btn-ghost">
+                          Open
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <StatePanel
+                    title="No donations yet"
+                    message="Create your first donation with a clear pickup time and location."
+                    action={<Link href="/donations/new" className="btn-primary">Create Donation</Link>}
+                  />
+                )}
               </div>
-              <div className="stat-card">
-                <p className="text-sm text-slate-300">Incoming Requests</p>
-                <p className="mt-3 text-4xl font-semibold">{restaurantData.requests.length}</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-sm text-slate-300">My Ads</p>
-                <p className="mt-3 text-4xl font-semibold">{restaurantData.adsCount}</p>
+
+              <div className="table-card">
+                <div className="border-b border-[#E5E7EB] px-4 py-3">
+                  <h2 className="font-semibold text-[#1F2937]">Requests requiring attention</h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">Pending requests appear first in your workflow.</p>
+                </div>
+                {recentRestaurantRequests.length ? (
+                  recentRestaurantRequests.map((request) => (
+                    <div key={request.id} className="list-row">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-[#1F2937]">{request.charityName || "Charity request"}</p>
+                        <p className="mt-1 text-sm text-[#6B7280]">
+                          {new Date(request.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <span className="status-badge border-[#F59E0B]/35 bg-[#FEF3C7] text-[#92400E]">
+                        {request.status}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <StatePanel title="No incoming requests" message="New charity requests will appear here as soon as they arrive." />
+                )}
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
-              <Link href="/donations/new" className="card transition duration-300 hover:-translate-y-1 hover:border-emerald-400/20">
-                <h2 className="text-xl font-semibold text-white">Create Donation</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Post a new food donation with pickup details and expiry time.
-                </p>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Link href="/donations" className="card transition hover:border-[#A5D6A7]">
+                <HandHeart className="h-5 w-5 text-[#2E7D32]" />
+                <h2 className="mt-3 font-semibold text-[#1F2937]">Manage Donations</h2>
+                <p className="mt-2 text-sm leading-6 text-[#6B7280]">Review live posts, update status, and keep availability accurate.</p>
               </Link>
-              <Link href="/requests" className="card transition duration-300 hover:-translate-y-1 hover:border-cyan-400/20">
-                <h2 className="text-xl font-semibold text-white">Review Requests</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Approve or reject charity requests for your donations.
-                </p>
+              <Link href="/requests" className="card transition hover:border-[#2563EB]/40">
+                <PackageCheck className="h-5 w-5 text-[#1E40AF]" />
+                <h2 className="mt-3 font-semibold text-[#1F2937]">Approve Pickups</h2>
+                <p className="mt-2 text-sm leading-6 text-[#6B7280]">Confirm requests before food is collected.</p>
               </Link>
-              <Link href="/ads/my" className="card transition duration-300 hover:-translate-y-1 hover:border-emerald-400/20">
-                <h2 className="text-xl font-semibold text-white">Manage Ads</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Track payment, approval, and publication of your ads.
-                </p>
+              <Link href="/ads/my" className="card transition hover:border-[#A5D6A7]">
+                <Megaphone className="h-5 w-5 text-[#2E7D32]" />
+                <h2 className="mt-3 font-semibold text-[#1F2937]">Track Ads</h2>
+                <p className="mt-2 text-sm leading-6 text-[#6B7280]">Monitor payment, approval, and publishing status.</p>
               </Link>
             </div>
           </div>
         ) : charityData ? (
-          <div className="space-y-8">
-            <div className="glass-card">
-              <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Charity Dashboard</p>
-              <h1 className="mt-4 text-4xl font-semibold text-white">Welcome back, {profile.name}</h1>
-              <p className="mt-4 max-w-2xl text-slate-300">
-                Browse available meals, send donation requests, and keep track of collection activity.
-              </p>
+          <div className="space-y-6">
+            <PageHeader
+              eyebrow="Charity workspace"
+              title={`Welcome back, ${profile.name}`}
+              description="Find available donations, track approved requests, and prepare collection schedules."
+              actions={
+                <>
+                  <Link href="/donations" className="btn-primary">
+                    <HandHeart className="h-4 w-4" />
+                    Browse Donations
+                  </Link>
+                  <Link href="/requests" className="btn-secondary">
+                    <CalendarCheck2 className="h-4 w-4" />
+                    My Requests
+                  </Link>
+                </>
+              }
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Available donations" value={availableDonations} helper="Open for requests now" tone="positive" />
+              <MetricCard label="Approved requests" value={approvedRequests} helper="Ready to coordinate pickup" tone="info" />
+              <MetricCard label="Pending requests" value={pendingCharityRequests} helper="Awaiting restaurant review" tone={pendingCharityRequests ? "attention" : "default"} />
+              <MetricCard label="Collection schedule" value={collectionSchedule.length} helper="Approved pickups to plan" />
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <div className="stat-card">
-                <p className="text-sm text-slate-300">Available Donations</p>
-                <p className="mt-3 text-4xl font-semibold">{charityData.availableDonations.length}</p>
+            <div className="grid gap-5 xl:grid-cols-2">
+              <div className="table-card">
+                <div className="border-b border-[#E5E7EB] px-4 py-3">
+                  <h2 className="font-semibold text-[#1F2937]">Nearby opportunities</h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">Available donations you can request now.</p>
+                </div>
+                {nearbyOpportunities.length ? (
+                  nearbyOpportunities.map((donation) => (
+                    <div key={donation.id} className="list-row">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-[#1F2937]">{donation.foodName}</p>
+                        <p className="mt-1 text-sm text-[#6B7280]">
+                          {donation.remainingQuantity}/{donation.totalQuantity} remaining - {donation.pickupLocation}
+                        </p>
+                      </div>
+                      <Link href={`/donations/${donation.id}`} className="btn-ghost">
+                        View
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <StatePanel title="No donations available" message="New available donations will appear here automatically." />
+                )}
               </div>
-              <div className="stat-card">
-                <p className="text-sm text-slate-300">My Requests</p>
-                <p className="mt-3 text-4xl font-semibold">{charityData.requests.length}</p>
-              </div>
-            </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <Link href="/donations" className="card transition duration-300 hover:-translate-y-1 hover:border-emerald-400/20">
-                <h2 className="text-xl font-semibold text-white">Browse Donations</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Explore available food donations and send requests.
-                </p>
-              </Link>
-              <Link href="/requests" className="card transition duration-300 hover:-translate-y-1 hover:border-cyan-400/20">
-                <h2 className="text-xl font-semibold text-white">Track Requests</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  View the current status of all requests made by your organization.
-                </p>
-              </Link>
+              <div className="table-card">
+                <div className="border-b border-[#E5E7EB] px-4 py-3">
+                  <h2 className="font-semibold text-[#1F2937]">Collection schedule</h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">Approved requests ready for pickup planning.</p>
+                </div>
+                {collectionSchedule.length ? (
+                  collectionSchedule.map((request) => (
+                    <div key={request.id} className="list-row">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-[#1F2937]">Donation #{request.donationId.slice(0, 6)}</p>
+                        <p className="mt-1 text-sm text-[#6B7280]">
+                          Approved - {new Date(request.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <Link href={`/donations/${request.donationId}`} className="btn-ghost">
+                        Route
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <StatePanel title="No approved pickups" message="Approved donation requests will become your pickup schedule." />
+                )}
+              </div>
             </div>
           </div>
         ) : null}

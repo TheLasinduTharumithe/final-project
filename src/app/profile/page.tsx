@@ -4,6 +4,7 @@ import { updateEmail } from "firebase/auth";
 import { useEffect, useState } from "react";
 import AvatarUpload from "@/components/AvatarUpload";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { auth } from "@/lib/firebase";
 import { getInitials, safePreviewSrc } from "@/lib/image";
@@ -122,37 +123,41 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
       <section className="page-shell">
+        <PageHeader
+          eyebrow="Profile"
+          title="Account and contact details"
+          description="Keep your organization details current so donation coordination stays reliable."
+        />
+
         {loading ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading profile...</p>
-          </div>
+          <StatePanel title="Loading profile" message="Fetching your latest account details." tone="loading" />
         ) : (
           <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
             <div className="glass-card">
-              <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Profile Summary</p>
+              <p className="page-eyebrow">Profile summary</p>
 
               <div className="mt-6 flex items-center gap-4">
                 {previewAvatar ? (
                   <img
                     src={previewAvatar}
                     alt="Profile avatar"
-                    className="h-20 w-20 rounded-full border border-white/10 object-cover"
+                    className="h-20 w-20 rounded-lg border border-[#E5E7EB] object-cover"
                   />
                 ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 text-2xl font-semibold text-slate-950 shadow-[0_16px_28px_rgba(16,185,129,0.22)]">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-[#A5D6A7] text-2xl font-semibold text-[#1F2937]">
                     {initials}
                   </div>
                 )}
 
                 <div>
-                  <h1 className="text-4xl font-semibold text-white">{profile?.name || "EcoPlate User"}</h1>
-                  <p className="mt-2 text-sm uppercase tracking-[0.22em] text-slate-400">
+                  <h2 className="text-2xl font-semibold text-[#1F2937]">{profile?.name || "EcoPlate User"}</h2>
+                  <p className="mt-2 text-sm uppercase tracking-[0.14em] text-[#6B7280]">
                     {profile?.role}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-8 space-y-4 text-sm leading-7 text-slate-300">
+              <div className="mt-8 space-y-4 text-sm leading-7 text-[#6B7280]">
                 <p>Email: {profile?.email}</p>
                 <p>Phone: {profile?.phone}</p>
                 <p>Address: {profile?.address}</p>
@@ -161,8 +166,8 @@ export default function ProfilePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="card">
-              <h2 className="text-2xl font-semibold tracking-tight text-white">Edit Profile</h2>
-              <p className="mt-2 text-sm text-slate-300">
+              <h2 className="text-2xl font-semibold text-[#1F2937]">Edit Profile</h2>
+              <p className="mt-2 text-sm text-[#6B7280]">
                 Keep your contact details accurate so donation coordination stays smooth.
               </p>
 
@@ -177,16 +182,18 @@ export default function ProfilePage() {
 
               <div className="mt-6 grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="label">Name</label>
+                  <label htmlFor="profileName" className="label">Name</label>
                   <input
+                    id="profileName"
                     className="input"
                     value={form.name}
                     onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="label">Email</label>
+                  <label htmlFor="profileEmail" className="label">Email</label>
                   <input
+                    id="profileEmail"
                     type="email"
                     className="input"
                     value={form.email}
@@ -194,22 +201,24 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="label">Phone</label>
+                  <label htmlFor="profilePhone" className="label">Phone</label>
                   <input
+                    id="profilePhone"
                     className="input"
                     value={form.phone}
                     onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="label">Role</label>
-                  <input className="input capitalize opacity-80" value={form.role} disabled />
+                  <label htmlFor="profileRole" className="label">Role</label>
+                  <input id="profileRole" className="input capitalize opacity-80" value={form.role} disabled />
                 </div>
               </div>
 
               <div className="mt-5">
-                <label className="label">Address</label>
+                <label htmlFor="profileAddress" className="label">Address</label>
                 <textarea
+                  id="profileAddress"
                   className="input min-h-[120px]"
                   value={form.address}
                   onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))}
@@ -217,13 +226,13 @@ export default function ProfilePage() {
               </div>
 
               {message ? (
-                <p className="mt-5 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+                  <p className="mt-5 rounded-md border border-[#A5D6A7] bg-[#E8F5E9] px-4 py-3 text-sm text-[#1F5A24]" role="status">
                   {message}
                 </p>
               ) : null}
 
               {error ? (
-                <p className="mt-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</p>
+                <p className="mt-5 rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">{error}</p>
               ) : null}
 
               <button type="submit" className="btn-primary mt-6" disabled={saving}>

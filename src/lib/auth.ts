@@ -19,6 +19,8 @@ interface RegisterInput {
   password: string;
   role: Exclude<UserRole, "admin">;
   avatar64?: string;
+  licenseFile?: string;
+  licenseFileName?: string;
 }
 
 type PublicRole = Exclude<UserRole, "admin">;
@@ -31,6 +33,8 @@ function buildGoogleFallbackProfile(user: User, role: PublicRole): AppUser {
     phone: "",
     address: "",
     role,
+    approvalStatus: "pending",
+    isApproved: false,
     createdAt: new Date().toISOString()
   };
 }
@@ -47,12 +51,20 @@ export async function registerUser(input: RegisterInput): Promise<AppUser> {
       address: input.address,
       role: input.role,
       avatar64: input.avatar64 || "",
+      licenseFile: input.licenseFile || "",
+      licenseFileName: input.licenseFileName || "",
+      approvalStatus: "pending",
+      isApproved: false,
       createdAt: new Date().toISOString()
     };
 
     await createUserProfile(userProfile);
-    return userProfile;
+    await auth.signOut(); // Users must be approved before logging in
+    throw new Error("Registration successful. Your account is waiting for admin approval.");
   } catch (error) {
+    if (error instanceof Error && error.message.includes("waiting for admin approval")) {
+      throw error;
+    }
     await deleteUser(credential.user).catch(() => null);
     throw error;
   }
@@ -67,6 +79,16 @@ export async function loginUser(email: string, password: string): Promise<AppUse
     throw new Error("Your account profile is missing. Please contact the admin.");
   }
 
+  if (profile.approvalStatus === "pending") {
+    await auth.signOut();
+    throw new Error("Your account is waiting for admin approval.");
+  }
+
+  if (profile.approvalStatus === "rejected") {
+    await auth.signOut();
+    throw new Error("Your account was rejected. Please contact support.");
+  }
+
   return profile;
 }
 
@@ -78,12 +100,22 @@ export async function signInWithGoogle(role: PublicRole): Promise<AppUser> {
   const existingProfile = await getUserProfile(credential.user.uid);
 
   if (existingProfile) {
+    if (existingProfile.approvalStatus === "pending") {
+      await auth.signOut();
+      throw new Error("Your account is waiting for admin approval.");
+    }
+
+    if (existingProfile.approvalStatus === "rejected") {
+      await auth.signOut();
+      throw new Error("Your account was rejected. Please contact support.");
+    }
     return existingProfile;
   }
 
   const newProfile = buildGoogleFallbackProfile(credential.user, role);
   await createUserProfile(newProfile);
-  return newProfile;
+  await auth.signOut();
+  throw new Error("Registration successful. Your account is waiting for admin approval.");
 }
 
 export async function logoutUser() {

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { PlusCircle } from "lucide-react";
 import AdCard from "@/components/AdCard";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { DashboardSkeleton, MetricCard, PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { getAdsByRestaurant } from "@/services/ads";
 import { getUserProfile } from "@/services/users";
@@ -57,37 +59,48 @@ export default function MyAdsPage() {
     };
   }, []);
 
+  const pendingAds = ads.filter((ad) => ad.status === "pending").length;
+  const approvedAds = ads.filter((ad) => ad.status === "approved").length;
+  const publishedAds = ads.filter((ad) => ad.status === "published").length;
+
   return (
     <ProtectedRoute allowedRoles={["restaurant"]}>
       <section className="page-shell">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">My Advertisements</p>
-            <h1 className="mt-3 text-4xl font-semibold text-white">Track your submitted ads</h1>
-          </div>
-          <Link href="/ads/new" className="btn-primary">
-            Create Ad
-          </Link>
-        </div>
+        <PageHeader
+          eyebrow="My advertisements"
+          title="Track submitted ads"
+          description="Follow approval, payment, and publishing progress for your restaurant promotions."
+          actions={
+            <Link href="/ads/new" className="btn-primary">
+              <PlusCircle className="h-4 w-4" />
+              Create Ad
+            </Link>
+          }
+        />
 
         {loading ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading your ads...</p>
-          </div>
+          <DashboardSkeleton />
         ) : error ? (
-          <div className="glass-card">
-            <p className="text-slate-300">{error}</p>
-          </div>
+          <StatePanel title="Could not load your ads" message={error} tone="error" />
         ) : ads.length ? (
-          <div className="grid gap-6 lg:grid-cols-2">
-            {ads.map((ad) => (
-              <AdCard key={ad.id} ad={ad} />
-            ))}
+          <div className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <MetricCard label="Pending" value={pendingAds} helper="Awaiting admin review" tone={pendingAds ? "attention" : "default"} />
+              <MetricCard label="Approved" value={approvedAds} helper="Ready for payment review" tone="info" />
+              <MetricCard label="Published" value={publishedAds} helper="Visible in public ads" tone="positive" />
+            </div>
+            <div className="grid gap-5 lg:grid-cols-2">
+              {ads.map((ad) => (
+                <AdCard key={ad.id} ad={ad} />
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="glass-card">
-            <p className="text-slate-300">You have not submitted any ads yet.</p>
-          </div>
+          <StatePanel
+            title="No ads submitted"
+            message="Create an ad when your restaurant has a promotion ready for review."
+            action={<Link href="/ads/new" className="btn-primary">Create Ad</Link>}
+          />
         )}
       </section>
     </ProtectedRoute>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ImageIcon } from "lucide-react";
+import { ArrowRight, CalendarClock, ImageIcon, MapPin, Package } from "lucide-react";
 import { safePreviewSrc } from "@/lib/image";
 import type { Donation } from "@/types";
 
@@ -11,24 +11,33 @@ interface DonationCardProps {
 function getDonationStatusClass(status: Donation["status"]) {
   switch (status) {
     case "available":
-      return "border-emerald-400/25 bg-emerald-500/10 text-emerald-300";
+      return "border-[#16A34A]/30 bg-[#DCFCE7] text-[#166534]";
     case "requested":
-      return "border-amber-400/25 bg-amber-500/10 text-amber-300";
+      return "border-[#F59E0B]/35 bg-[#FEF3C7] text-[#92400E]";
     case "completed":
-      return "border-lime-400/25 bg-lime-500/10 text-lime-300";
+      return "border-[#6B7280]/35 bg-[#F3F4F1] text-[#374151]";
     case "cancelled":
-      return "border-rose-400/25 bg-rose-500/10 text-rose-300";
+      return "border-[#DC2626]/30 bg-[#FEE2E2] text-[#991B1B]";
+    case "expired":
+      return "border-[#DC2626]/30 bg-[#FEE2E2] text-[#991B1B]";
     default:
-      return "border-white/10 bg-white/[0.06] text-slate-300";
+      return "border-[#D1D5DB] bg-[#F3F4F1] text-[#374151]";
   }
 }
 
 export default function DonationCard({ donation, ctaLabel = "View Details" }: DonationCardProps) {
   const previewSrc = safePreviewSrc(donation.image64);
+  const expiresAt = new Date(donation.expiresAt || donation.expiryDate);
+  const pickupTime = new Date(donation.pickupTime);
+  const expiresSoon =
+    donation.status === "available" &&
+    donation.expiresAt &&
+    expiresAt.getTime() - Date.now() < 60 * 60 * 1000 &&
+    expiresAt.getTime() - Date.now() > 0;
 
   return (
-    <div className="card flex h-full flex-col overflow-hidden p-0">
-      <div className="overflow-hidden border-b border-white/10">
+    <article className="card flex h-full flex-col overflow-hidden p-0">
+      <div className="relative overflow-hidden border-b border-[#E5E7EB]">
         {previewSrc ? (
           <img
             src={previewSrc}
@@ -36,53 +45,72 @@ export default function DonationCard({ donation, ctaLabel = "View Details" }: Do
             className="aspect-[16/10] w-full object-cover"
           />
         ) : (
-          <div className="flex aspect-[16/10] w-full items-center justify-center bg-[rgba(255,255,255,0.04)]">
-            <div className="flex flex-col items-center gap-3 text-slate-400">
-              <div className="feature-icon-wrap border-white/10 bg-white/[0.05] text-slate-300">
+          <div className="flex aspect-[16/10] w-full items-center justify-center bg-[#F8F6F0]">
+            <div className="flex flex-col items-center gap-3 text-[#6B7280]">
+              <div className="feature-icon-wrap">
                 <ImageIcon className="h-5 w-5" />
               </div>
               <p className="text-sm font-medium">No donation image</p>
             </div>
           </div>
         )}
-      </div>
-
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
-              Donation
-            </p>
-            <h3 className="mt-2 text-xl font-semibold text-white">{donation.foodName}</h3>
-          </div>
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <span className={`status-badge ${getDonationStatusClass(donation.status)}`}>
             {donation.status}
           </span>
+          {expiresSoon ? (
+            <span className="status-badge border-[#DC2626]/30 bg-[#FEE2E2] text-[#991B1B]">
+              Expires soon
+            </span>
+          ) : null}
         </div>
-
-        <div className="space-y-2 text-sm text-slate-300">
-          <p>
-            <span className="font-medium text-white">Quantity:</span> {donation.quantity}
-          </p>
-          <p>
-            <span className="font-medium text-white">Pickup:</span> {donation.pickupLocation}
-          </p>
-          <p>
-            <span className="font-medium text-white">Time:</span>{" "}
-            {new Date(donation.pickupTime).toLocaleString()}
-          </p>
-          <p>
-            <span className="font-medium text-white">Valid until:</span>{" "}
-            {new Date(donation.expiryDate).toLocaleString()}
-          </p>
-        </div>
-
-        <p className="mt-4 flex-1 text-sm leading-6 text-slate-300">{donation.description}</p>
-
-        <Link href={`/donations/${donation.id}`} className="btn-primary mt-6 text-center">
-          {ctaLabel}
-        </Link>
       </div>
-    </div>
+
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <h3 className="text-lg font-semibold leading-snug text-[#1F2937]">{donation.foodName}</h3>
+
+        <div className="mt-4 meta-grid">
+          <div className="meta-item">
+            <span className="meta-label">Remaining</span>
+            <span className="meta-value inline-flex items-center gap-2">
+              <Package className="h-4 w-4 text-[#6B7280]" />
+              {donation.remainingQuantity} / {donation.totalQuantity}
+            </span>
+          </div>
+          <div className="meta-item">
+            <span className="meta-label">Pickup</span>
+            <span className="meta-value inline-flex items-start gap-2">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#6B7280]" />
+              {donation.pickupLocation}
+            </span>
+          </div>
+          <div className="meta-item">
+            <span className="meta-label">Pickup time</span>
+            <span className="meta-value inline-flex items-center gap-2">
+              <CalendarClock className="h-4 w-4 text-[#6B7280]" />
+              {pickupTime.toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        <p className="mt-4 flex-1 text-sm leading-6 text-[#6B7280] line-clamp-3">
+          {donation.description}
+        </p>
+        <p className="mt-4 text-xs font-medium text-[#6B7280]">
+          Valid until {expiresAt.toLocaleString()}
+        </p>
+
+        {donation.status === "expired" ? (
+          <button disabled className="btn-light mt-5 w-full cursor-not-allowed text-center opacity-50">
+            Expired
+          </button>
+        ) : (
+          <Link href={`/donations/${donation.id}`} className="btn-primary mt-5 text-center">
+            {ctaLabel}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        )}
+      </div>
+    </article>
   );
 }

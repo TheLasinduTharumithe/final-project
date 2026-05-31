@@ -60,14 +60,14 @@ export default function ChatBox() {
 
   return (
     <div className="card">
-      <div className="mb-5 space-y-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+      <div className="mb-5 space-y-4 rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] p-4 sm:p-5">
         {messages.map((message, index) => (
           <div
             key={`${message.role}-${index}`}
             className={`max-w-[92%] rounded-[1.6rem] px-4 py-3 text-sm leading-7 sm:max-w-[85%] ${
               message.role === "user"
-                ? "ml-auto bg-[#22C55E] text-slate-950 shadow-[0_14px_30px_rgba(34,197,94,0.18)]"
-                : "bg-[rgba(16,34,53,0.95)] text-slate-100 shadow-[0_14px_30px_rgba(2,6,23,0.18)]"
+                ? "ml-auto bg-[#2E7D32] text-white"
+                : "border border-[#E5E7EB] bg-white text-[#374151]"
             }`}
           >
             {message.text}
@@ -75,7 +75,7 @@ export default function ChatBox() {
         ))}
 
         {loading ? (
-          <div className="max-w-[92%] rounded-[1.6rem] bg-[rgba(16,34,53,0.95)] px-4 py-3 text-sm leading-7 text-slate-300 shadow-[0_14px_30px_rgba(2,6,23,0.18)] sm:max-w-[85%]">
+          <div className="max-w-[92%] rounded-[1.6rem] border border-[#E5E7EB] bg-white px-4 py-3 text-sm leading-7 text-[#6B7280] sm:max-w-[85%]">
             EcoPlate Assistant සිතමින් ඉන්නවා...
           </div>
         ) : null}
@@ -90,7 +90,7 @@ export default function ChatBox() {
         />
 
         {error ? (
-          <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]">
             {error}
           </p>
         ) : null}

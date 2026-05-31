@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdCard from "@/components/AdCard";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { DashboardSkeleton, MetricCard, PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { getAllAds, updateAd } from "@/services/ads";
 import { getUserProfile } from "@/services/users";
@@ -72,30 +73,41 @@ export default function AdminAdsPage() {
     }
   }
 
+  const pendingAds = ads.filter((ad) => ad.status === "pending").length;
+  const approvedAds = ads.filter((ad) => ad.status === "approved").length;
+  const paidAds = ads.filter((ad) => ad.paymentStatus === "paid").length;
+  const publishedAds = ads.filter((ad) => ad.status === "published").length;
+
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
       <section className="page-shell">
-        <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Admin Ad Management</p>
-          <h1 className="mt-3 text-4xl font-semibold text-white">Approve, reject, and publish ads</h1>
-        </div>
+        <PageHeader
+          eyebrow="Admin ad management"
+          title="Approve, reject, and publish ads"
+          description="Ads can only be published after approval and paid payment status."
+        />
 
         {loading ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading ads...</p>
-          </div>
+          <DashboardSkeleton />
         ) : error ? (
-          <div className="glass-card">
-            <p className="text-slate-300">{error}</p>
-          </div>
+          <StatePanel title="Could not load ads" message={error} tone="error" />
         ) : ads.length ? (
-          <div className="space-y-6">
+          <div className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Pending" value={pendingAds} helper="Needs admin review" tone={pendingAds ? "attention" : "default"} />
+              <MetricCard label="Approved" value={approvedAds} helper="Can be paid next" tone="info" />
+              <MetricCard label="Paid" value={paidAds} helper="Ready for publishing rules" tone="positive" />
+              <MetricCard label="Published" value={publishedAds} helper="Visible to users" />
+            </div>
             {ads.map((ad) => (
               <div key={ad.id} className="grid gap-5 lg:grid-cols-[1fr_auto]">
                 <AdCard ad={ad} />
 
-                <div className="card h-fit w-full lg:w-[240px]">
-                  <h2 className="text-lg font-semibold text-white">Admin Actions</h2>
+                <div className="card h-fit w-full lg:w-[248px]">
+                  <h2 className="text-lg font-semibold text-[#1F2937]">Admin actions</h2>
+                  <p className="mt-1 text-sm leading-6 text-[#6B7280]">
+                    Current: {ad.status} / {ad.paymentStatus}
+                  </p>
                   <div className="mt-5 space-y-3">
                     <button
                       type="button"
@@ -147,9 +159,7 @@ export default function AdminAdsPage() {
             ))}
           </div>
         ) : (
-          <div className="glass-card">
-            <p className="text-slate-300">No ads have been submitted yet.</p>
-          </div>
+          <StatePanel title="No submitted ads" message="Restaurant ad submissions will appear here for review." />
         )}
       </section>
     </ProtectedRoute>

@@ -10,11 +10,12 @@ import {
   Mail,
   MapPinHouse,
   Phone,
-  Sparkles,
+  ShieldCheck,
   UserRound
 } from "lucide-react";
 import { useState } from "react";
 import AvatarUpload from "@/components/AvatarUpload";
+import FileUpload from "@/components/FileUpload";
 import { getRoleRedirectPath, registerUser, signInWithGoogle } from "@/lib/auth";
 
 const roleOptions = [
@@ -32,7 +33,9 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     role: "restaurant" as "restaurant" | "charity",
-    avatar64: ""
+    avatar64: "",
+    licenseFile: "",
+    licenseFileName: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,9 +53,10 @@ export default function RegisterPage() {
       !form.phone ||
       !form.address ||
       !form.password ||
-      !form.confirmPassword
+      !form.confirmPassword ||
+      !form.licenseFile
     ) {
-      setError("Please fill in all fields.");
+      setError("Please fill in all fields and upload your license/certificate.");
       return;
     }
 
@@ -70,7 +74,9 @@ export default function RegisterPage() {
         address: form.address,
         password: form.password,
         role: form.role,
-        avatar64: form.avatar64 || ""
+        avatar64: form.avatar64 || "",
+        licenseFile: form.licenseFile,
+        licenseFileName: form.licenseFileName
       });
 
       router.push(getRoleRedirectPath(profile.role));
@@ -105,36 +111,29 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="glass-card relative overflow-hidden"
+          className="glass-card"
         >
-          <div className="hero-orb left-[-5rem] top-12 h-40 w-40 bg-emerald-400/14" />
-          <div className="hero-orb bottom-[-3rem] right-[-2rem] h-52 w-52 bg-cyan-400/12" />
-          <div className="relative z-10">
-            <div className="section-kicker">
-              <Sparkles className="h-4 w-4" />
-              Join EcoPlate
-            </div>
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Create a modern account and start reducing food waste.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
-              Restaurants can donate surplus meals, charities can request support, and the whole experience stays clean, responsive, and easy to present.
-            </p>
+          <p className="page-eyebrow">Create account</p>
+          <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#1F2937]">
+            Register your organization for EcoPlate access.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#6B7280]">
+            New restaurant and charity accounts are reviewed before operational access is granted.
+          </p>
 
-            <div className="mt-12 space-y-4">
-              {[
-                "Restaurants can publish donations and advertisements from one dashboard.",
-                "Charities can browse available food and send donation requests quickly.",
-                "Admin accounts should still be created manually for security and demo control."
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[1.75rem] border border-white/10 bg-white/[0.05] px-5 py-4 text-sm leading-7 text-slate-300"
-                >
-                  {item}
+          <div className="mt-8 space-y-3">
+            {[
+              "Upload the correct license or certificate so admins can verify the account.",
+              "Use contact details that pickup coordinators can rely on.",
+              "Admin accounts should still be created manually for security and demo control."
+            ].map((item) => (
+              <div key={item} className="flex gap-3 rounded-md border border-[#E5E7EB] bg-[#FAFAF8] p-3">
+                <div className="feature-icon-wrap">
+                  <ShieldCheck className="h-5 w-5" />
                 </div>
-              ))}
-            </div>
+                <p className="text-sm leading-6 text-[#6B7280]">{item}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
 
@@ -143,34 +142,32 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.04, ease: "easeOut" }}
           onSubmit={handleSubmit}
-          className="card relative overflow-hidden"
+          className="card"
         >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-500/12 to-transparent" />
-
           <div className="relative mb-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-300">
+            <p className="page-eyebrow">
               Register
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#1F2937]">
               Create your EcoPlate profile
             </h2>
-            <p className="mt-3 text-sm leading-7 text-slate-300">
+            <p className="mt-3 text-sm leading-7 text-[#6B7280]">
               Choose your role, enter the key organization details, and get started in minutes.
             </p>
           </div>
 
           <div className="mb-6">
-            <label className="label">Role</label>
-            <div className="grid grid-cols-2 gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-2">
+            <span className="label">Role</span>
+            <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#E5E7EB] bg-[#F8F6F0] p-1.5">
               {roleOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => setForm((current) => ({ ...current, role: option.value }))}
-                  className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                  className={`rounded-md px-4 py-3 text-sm font-semibold transition ${
                     form.role === option.value
-                      ? "bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-[#2E7D32] text-white"
+                      : "text-[#6B7280] hover:bg-[#F3F4F1] hover:text-[#1F2937]"
                   }`}
                 >
                   {option.label}
@@ -188,12 +185,23 @@ export default function RegisterPage() {
             />
           </div>
 
+          <div className="mb-6">
+            <FileUpload
+              label={form.role === "restaurant" ? "Restaurant License" : "Charity Certificate"}
+              value={form.licenseFile}
+              fileName={form.licenseFileName}
+              onChange={(licenseFile, licenseFileName) => setForm((current) => ({ ...current, licenseFile, licenseFileName }))}
+              disabled={loading || googleLoading}
+            />
+          </div>
+
           <div className="grid gap-5 md:grid-cols-2">
             <div>
-              <label className="label">Full Name</label>
+              <label htmlFor="registerName" className="label">Full name</label>
               <div className="relative">
                 <UserRound className="auth-icon" />
                 <input
+                  id="registerName"
                   className="auth-input"
                   value={form.name}
                   onChange={(event) =>
@@ -205,10 +213,11 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="label">Email</label>
+              <label htmlFor="registerEmail" className="label">Email</label>
               <div className="relative">
                 <Mail className="auth-icon" />
                 <input
+                  id="registerEmail"
                   type="email"
                   className="auth-input"
                   value={form.email}
@@ -221,10 +230,11 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="label">Phone</label>
+              <label htmlFor="registerPhone" className="label">Phone</label>
               <div className="relative">
                 <Phone className="auth-icon" />
                 <input
+                  id="registerPhone"
                   className="auth-input"
                   value={form.phone}
                   onChange={(event) =>
@@ -236,10 +246,11 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="label">Address</label>
+              <label htmlFor="registerAddress" className="label">Address</label>
               <div className="relative">
                 <MapPinHouse className="auth-icon" />
                 <input
+                  id="registerAddress"
                   className="auth-input"
                   value={form.address}
                   onChange={(event) =>
@@ -253,10 +264,11 @@ export default function RegisterPage() {
 
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             <div>
-              <label className="label">Password</label>
+              <label htmlFor="registerPassword" className="label">Password</label>
               <div className="relative">
                 <LockKeyhole className="auth-icon" />
                 <input
+                  id="registerPassword"
                   type={showPassword ? "text" : "password"}
                   className="auth-input"
                   value={form.password}
@@ -277,10 +289,11 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="label">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="label">Confirm password</label>
               <div className="relative">
                 <LockKeyhole className="auth-icon" />
                 <input
+                  id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   className="auth-input"
                   value={form.confirmPassword}
@@ -306,7 +319,7 @@ export default function RegisterPage() {
           </div>
 
           {error ? (
-            <p className="mt-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+              <p className="mt-5 rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">
               {error}
             </p>
           ) : null}
@@ -318,10 +331,10 @@ export default function RegisterPage() {
 
             <div className="relative py-1">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10" />
+                <div className="w-full border-t border-[#E5E7EB]" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-[rgba(16,34,53,0.95)] px-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                <span className="bg-white px-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">
                   Or
                 </span>
               </div>
@@ -331,7 +344,7 @@ export default function RegisterPage() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading || googleLoading}
-              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex w-full items-center justify-center gap-3 rounded-md border border-[#E5E7EB] bg-[#F3F4F1] px-4 py-3 text-sm font-semibold text-[#1F2937] transition hover:border-[#D1D5DB] hover:bg-[#E5E7EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                 <path
@@ -354,9 +367,9 @@ export default function RegisterPage() {
               {googleLoading ? "Connecting to Google..." : "Continue with Google"}
             </button>
 
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[#6B7280]">
               Already registered?{" "}
-              <Link href="/login" className="font-semibold text-emerald-300">
+              <Link href="/login" className="font-semibold text-[#2E7D32]">
                 Login
               </Link>
             </p>

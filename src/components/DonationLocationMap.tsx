@@ -19,7 +19,7 @@ interface DonationLocationMapInnerProps extends DonationLocationMapProps {
 
 function MapLoadingState() {
   return (
-    <div className="map-card flex h-[300px] items-center justify-center bg-white/[0.04] text-sm text-slate-400">
+    <div className="map-card flex h-[300px] items-center justify-center bg-[#FAFAF8] text-sm text-[#6B7280]">
       Loading location map...
     </div>
   );
@@ -49,7 +49,7 @@ const ClientDonationLocationMap = dynamic<DonationLocationMapInnerProps>(
 
       if (typeof latitude !== "number" || typeof longitude !== "number") {
         return (
-          <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] px-5 py-6 text-sm text-slate-400">
+          <div className="rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-5 py-6 text-sm text-[#6B7280]">
             Location not available.
           </div>
         );
@@ -144,8 +144,8 @@ const ClientDonationLocationMap = dynamic<DonationLocationMapInnerProps>(
           {enableRoute ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-semibold text-white">Pickup route for charity</p>
-                <p className="mt-1 text-sm text-slate-300">
+                <p className="text-sm font-semibold text-[#1F2937]">Pickup route for charity</p>
+                <p className="mt-1 text-sm text-[#6B7280]">
                   Use your current location to draw a pickup route with OSRM.
                 </p>
               </div>
@@ -191,38 +191,38 @@ const ClientDonationLocationMap = dynamic<DonationLocationMapInnerProps>(
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+            <div className="rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6B7280]">
                 Latitude
               </p>
-              <p className="mt-2 text-sm font-medium text-white">{latitude.toFixed(6)}</p>
+              <p className="mt-2 text-sm font-medium text-[#1F2937]">{latitude.toFixed(6)}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+            <div className="rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6B7280]">
                 Longitude
               </p>
-              <p className="mt-2 text-sm font-medium text-white">{longitude.toFixed(6)}</p>
+              <p className="mt-2 text-sm font-medium text-[#1F2937]">{longitude.toFixed(6)}</p>
             </div>
           </div>
 
           {distanceKm !== null && durationMinutes !== null ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+              <div className="rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6B7280]">
                   Route Distance
                 </p>
-                <p className="mt-2 text-sm font-medium text-white">{distanceKm} km</p>
+                <p className="mt-2 text-sm font-medium text-[#1F2937]">{distanceKm} km</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+              <div className="rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6B7280]">
                   Estimated Time
                 </p>
-                <p className="mt-2 text-sm font-medium text-white">{durationMinutes} min</p>
+                <p className="mt-2 text-sm font-medium text-[#1F2937]">{durationMinutes} min</p>
               </div>
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="rounded-lg border border-[#A5D6A7] bg-[#E8F5E9] px-4 py-3 text-sm text-[#2E7D32]">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
               Pickup location is pinned on the map.
@@ -230,13 +230,13 @@ const ClientDonationLocationMap = dynamic<DonationLocationMapInnerProps>(
           </div>
 
           {routeError ? (
-            <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+            <div className="rounded-lg border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#B91C1C]">
               {routeError}
             </div>
           ) : null}
 
           {routeCoordinates.length > 1 ? (
-            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-300">
+            <div className="rounded-lg border border-[#2563EB]/30 bg-[#DBEAFE] px-4 py-3 text-sm text-[#2563EB]">
               <div className="flex items-center gap-2">
                 <Route className="h-4 w-4" />
                 OSRM route is shown from your location to the donation pickup point.

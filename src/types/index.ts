@@ -9,6 +9,10 @@ export interface AppUser {
   address: string;
   role: UserRole;
   avatar64?: string;
+  licenseFile?: string;
+  licenseFileName?: string;
+  approvalStatus?: "pending" | "approved" | "rejected";
+  isApproved?: boolean;
   createdAt: string;
 }
 
@@ -16,12 +20,13 @@ export type AppUserFormValues = Omit<AppUser, "createdAt"> & {
   createdAt?: string;
 };
 
-export type DonationStatus = "available" | "requested" | "completed" | "cancelled";
+export type DonationStatus = "available" | "requested" | "completed" | "cancelled" | "expired";
 export const DONATION_STATUSES: DonationStatus[] = [
   "available",
   "requested",
   "completed",
-  "cancelled"
+  "cancelled",
+  "expired"
 ];
 
 export interface Donation {
@@ -29,10 +34,15 @@ export interface Donation {
   restaurantId: string;
   foodName: string;
   quantity: string;
+  totalQuantity: number;
+  remainingQuantity: number;
+  requestedQuantity: number;
   description: string;
   pickupLocation: string;
   pickupTime: string;
   expiryDate: string;
+  expiryTime: string;
+  expiresAt: string;
   status: DonationStatus;
   image64?: string;
   latitude?: number;
@@ -41,8 +51,9 @@ export interface Donation {
   createdAt: string;
 }
 
-export type DonationFormValues = Omit<Donation, "createdAt"> & {
+export type DonationFormValues = Omit<Donation, "createdAt" | "expiresAt"> & {
   createdAt?: string;
+  expiresAt?: string;
 };
 
 export type RequestStatus = "pending" | "approved" | "rejected";
@@ -50,9 +61,11 @@ export type RequestStatus = "pending" | "approved" | "rejected";
 export interface DonationRequest {
   id: string;
   donationId: string;
+  restaurantId: string;
   charityId: string;
   charityName?: string;
   message: string;
+  requestedQuantity: number;
   status: RequestStatus;
   createdAt: string;
 }

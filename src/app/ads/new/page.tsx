@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdForm, { type AdFormValues } from "@/components/AdForm";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { createAd } from "@/services/ads";
 import { getUserProfile } from "@/services/users";
@@ -83,22 +84,16 @@ export default function NewAdPage() {
   return (
     <ProtectedRoute allowedRoles={["restaurant"]}>
       <section className="page-shell">
-        <div className="mb-8 max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">New Advertisement</p>
-          <h1 className="mt-3 text-4xl font-semibold text-white">Submit a restaurant advertisement</h1>
-          <p className="mt-4 text-slate-300">
-            Your ad will stay pending until an admin reviews it and updates the payment and publishing status.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="New advertisement"
+          title="Submit a restaurant advertisement"
+          description="Your ad stays pending until an admin reviews it and updates payment and publishing status."
+        />
 
         {loadingProfile ? (
-          <div className="glass-card">
-            <p className="text-slate-300">Loading your restaurant profile...</p>
-          </div>
+          <StatePanel title="Loading restaurant profile" message="Preparing the advertisement form." tone="loading" />
         ) : profileError ? (
-          <div className="glass-card">
-            <p className="text-slate-300">{profileError}</p>
-          </div>
+          <StatePanel title="Advertisement unavailable" message={profileError} tone="error" />
         ) : (
           <AdForm onSubmit={handleSubmit} disabled={!profile} />
         )}

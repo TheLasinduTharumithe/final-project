@@ -52,21 +52,31 @@ export default function AdForm({ onSubmit, disabled = false }: AdFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-5">
+    <form onSubmit={handleSubmit} className="card space-y-5" noValidate>
       <div>
-        <label className="label">Ad Title</label>
+        <h2 className="text-lg font-semibold text-[#1F2937]">Advertisement details</h2>
+        <p className="mt-1 text-sm leading-6 text-[#6B7280]">
+          Approved and paid ads can be published by an administrator.
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor="adTitle" className="label">Ad title</label>
         <input
+          id="adTitle"
           className="input"
           value={form.title}
           onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
           placeholder="Weekend buffet promotion"
           disabled={disabled || loading}
+          required
         />
       </div>
 
       <div>
-        <label className="label">Description</label>
+        <label htmlFor="adDescription" className="label">Description</label>
         <textarea
+          id="adDescription"
           className="input min-h-[120px]"
           value={form.description}
           onChange={(event) =>
@@ -74,13 +84,15 @@ export default function AdForm({ onSubmit, disabled = false }: AdFormProps) {
           }
           placeholder="Tell users about your restaurant, offer, or campaign."
           disabled={disabled || loading}
+          required
         />
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <div>
-          <label className="label">Contact Number</label>
+          <label htmlFor="contactNumber" className="label">Contact number</label>
           <input
+            id="contactNumber"
             className="input"
             value={form.contactNumber}
             onChange={(event) =>
@@ -88,6 +100,7 @@ export default function AdForm({ onSubmit, disabled = false }: AdFormProps) {
             }
             placeholder="+94 77 123 4567"
             disabled={disabled || loading}
+            required
           />
         </div>
         <div className="md:col-span-1">
@@ -103,7 +116,7 @@ export default function AdForm({ onSubmit, disabled = false }: AdFormProps) {
       </div>
 
       {error ? (
-        <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+        <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">
           {error}
         </p>
       ) : null}

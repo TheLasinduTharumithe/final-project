@@ -10,9 +10,10 @@ import type { ReactNode } from "react";
 interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: UserRole[];
+  requireApproval?: boolean;
 }
 
-export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, allowedRoles, requireApproval = false }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isChecking, setIsChecking] = useState(true);
@@ -69,7 +70,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     return (
       <div className="page-shell">
         <div className="card max-w-xl text-center">
-          <p className="text-sm text-slate-500">Checking your access...</p>
+          <p className="text-sm text-[#9CA3AF]">Checking your access...</p>
         </div>
       </div>
     );
@@ -77,6 +78,19 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
 
   if (!profile) {
     return null;
+  }
+
+  if (requireApproval && profile.role !== "admin" && profile.approvalStatus !== "approved") {
+    return (
+      <div className="page-shell">
+        <div className="card max-w-xl text-center">
+          <h2 className="text-xl font-semibold text-[#1F2937]">Account Pending Approval</h2>
+          <p className="mt-3 text-sm text-[#6B7280]">
+            Your account is currently under review by our team. You will have full access to the platform once approved.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

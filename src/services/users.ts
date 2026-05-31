@@ -5,7 +5,10 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  updateDoc
+  updateDoc,
+  onSnapshot,
+  query,
+  where
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { USER_ROLES, type AppUser, type AppUserFormValues, type UserRole } from "@/types";
@@ -84,4 +87,71 @@ export async function getUserSystemStats() {
     totalRestaurants: users.filter((user) => user.role === "restaurant").length,
     totalCharities: users.filter((user) => user.role === "charity").length
   };
+}
+
+export async function approveUser(userId: string) {
+  await updateDoc(doc(db, "users", userId), {
+    approvalStatus: "approved",
+    isApproved: true
+  });
+}
+
+export async function rejectUser(userId: string) {
+  await updateDoc(doc(db, "users", userId), {
+    approvalStatus: "rejected",
+    isApproved: false
+  });
+}
+
+export async function getPendingUsers() {
+  const q = query(
+    usersCollection,
+    where("approvalStatus", "==", "pending")
+  );
+  const snapshot = await getDocs(q);
+  const pending = snapshot.docs.map((item) => ({
+    id: item.id,
+    ...(item.data() || {})
+  }) as AppUser);
+  
+  return pending.filter(user => user.role === "restaurant" || user.role === "charity");
+}
+
+export function subscribeToPendingUsers(callback: (users: AppUser[]) => void) {
+  const q = query(
+    usersCollection,
+    where("approvalStatus", "==", "pending")
+  );
+  return onSnapshot(q, (snapshot) => {
+    const allPending = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() || {})
+    }) as AppUser);
+    
+    callback(allPending.filter(user => user.role === "restaurant" || user.role === "charity"));
+  }, (error) => {
+    if (error.code !== "permission-denied") console.error("Pending users snapshot error:", error);
+  });
+}
+
+export function subscribeToCharities(callback: (users: AppUser[]) => void) {
+  const q = query(usersCollection, where("role", "==", "charity"));
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map(mapUser));
+  }, (error) => {
+    if (error.code !== "permission-denied") console.error("Charities snapshot error:", error);
+  });
+}
+
+export async function getApprovedCharities() {
+  // Query only by role to avoid requiring a Firestore Composite Index
+  const q = query(
+    usersCollection,
+    where("role", "==", "charity")
+  );
+  const snapshot = await getDocs(q);
+  const allCharities = snapshot.docs.map(mapUser);
+  
+  // Filter by approvalStatus in memory
+  return allCharities.filter(charity => charity.approvalStatus === "approved");
 }

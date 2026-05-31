@@ -140,48 +140,70 @@ export default function DonationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-6">
-      <div className="grid gap-5 md:grid-cols-2">
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <fieldset className="card space-y-5">
         <div>
-          <label className="label">Food Name</label>
-          <input
-            className="input"
-            value={form.foodName}
-            onChange={(event) => updateField("foodName", event.target.value)}
-            placeholder="Rice packs, sandwiches, fresh fruit"
-          />
+          <h2 className="text-lg font-semibold text-[#1F2937]">Food details</h2>
+          <p className="mt-1 text-sm leading-6 text-[#6B7280]">
+            Help charities quickly understand what is available and how it should be handled.
+          </p>
         </div>
-        <div>
-          <label className="label">Quantity</label>
-          <input
-            className="input"
-            value={form.quantity}
-            onChange={(event) => updateField("quantity", event.target.value)}
-            placeholder="50 meal boxes"
-          />
-        </div>
-      </div>
 
-      <div>
-        <label className="label">Description</label>
-        <textarea
-          className="input min-h-[120px]"
-          value={form.description}
-          onChange={(event) => updateField("description", event.target.value)}
-          placeholder="Include food type, storage notes, and special handling details."
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label htmlFor="foodName" className="label">Food name</label>
+            <input
+              id="foodName"
+              className="input"
+              value={form.foodName}
+              onChange={(event) => updateField("foodName", event.target.value)}
+              placeholder="Rice packs, sandwiches, fresh fruit"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="quantity" className="label">Quantity</label>
+            <input
+              id="quantity"
+              className="input"
+              value={form.quantity}
+              onChange={(event) => updateField("quantity", event.target.value)}
+              placeholder="50 meal boxes"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="description" className="label">Description</label>
+          <textarea
+            id="description"
+            className="input min-h-[120px]"
+            value={form.description}
+            onChange={(event) => updateField("description", event.target.value)}
+            placeholder="Include food type, storage notes, and special handling details."
+            required
+          />
+        </div>
+
+        <ImageUpload
+          value={form.image64}
+          onChange={(image64) => updateField("image64", image64)}
+          label="Donation Image"
+          helperText="Upload one clear image for this donation post. The image is compressed and stored directly in Firestore."
         />
-      </div>
+      </fieldset>
 
-      <ImageUpload
-        value={form.image64}
-        onChange={(image64) => updateField("image64", image64)}
-        label="Donation Image"
-        helperText="Upload one clear image for this donation post. The image is compressed and stored directly in Firestore."
-      />
-
-      <div className="space-y-5">
+      <fieldset className="card space-y-5">
         <div>
-          <label className="label">Pickup Location On Map</label>
+          <h2 className="text-lg font-semibold text-[#1F2937]">Pickup coordination</h2>
+          <p className="mt-1 text-sm leading-6 text-[#6B7280]">
+            Pin the location and add practical notes so pickup teams can arrive prepared.
+          </p>
+        </div>
+
+        <div>
+          <label className="label">Pickup location on map</label>
           <LocationPickerMap
             latitude={form.latitude}
             longitude={form.longitude}
@@ -197,38 +219,42 @@ export default function DonationForm({
         </div>
 
         <div>
-          <label className="label">Location Note (Optional)</label>
+          <label htmlFor="locationText" className="label">Location note (optional)</label>
           <input
+            id="locationText"
             className="input"
             value={form.locationText || ""}
             onChange={(event) => updateField("locationText", event.target.value)}
             placeholder="Front gate pickup, side entrance, loading dock, etc."
           />
         </div>
-      </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <div>
-          <label className="label">Pickup Location</label>
+          <label htmlFor="pickupLocation" className="label">Pickup address or desk</label>
           <input
+            id="pickupLocation"
             className="input"
             value={form.pickupLocation}
             onChange={(event) => updateField("pickupLocation", event.target.value)}
             placeholder="Restaurant address or pickup desk"
+            required
           />
         </div>
 
         <div className="space-y-3">
-          <label className="label">Pickup Time</label>
+          <label className="label">Pickup time</label>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="relative">
               <CalendarDays className="auth-icon" />
               <input
                 ref={pickupDateRef}
+                aria-label="Pickup date"
                 type="date"
                 className="auth-input"
                 value={pickupDate}
                 onChange={(event) => setPickupDate(event.target.value)}
+                required
               />
               <button
                 type="button"
@@ -243,10 +269,12 @@ export default function DonationForm({
               <Clock3 className="auth-icon" />
               <input
                 ref={pickupTimeRef}
+                aria-label="Pickup clock time"
                 type="time"
                 className="auth-input"
                 value={pickupClock}
                 onChange={(event) => setPickupClock(event.target.value)}
+                required
               />
               <button
                 type="button"
@@ -263,16 +291,18 @@ export default function DonationForm({
 
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-3">
-          <label className="label">Valid Until</label>
+          <label className="label">Valid until</label>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="relative">
               <CalendarDays className="auth-icon" />
               <input
                 ref={expiryDateRef}
+                aria-label="Expiry date"
                 type="date"
                 className="auth-input"
                 value={expiryCalendarDate}
                 onChange={(event) => setExpiryCalendarDate(event.target.value)}
+                required
               />
               <button
                 type="button"
@@ -287,10 +317,12 @@ export default function DonationForm({
               <Clock3 className="auth-icon" />
               <input
                 ref={expiryTimeRef}
+                aria-label="Expiry clock time"
                 type="time"
                 className="auth-input"
                 value={expiryClock}
                 onChange={(event) => setExpiryClock(event.target.value)}
+                required
               />
               <button
                 type="button"
@@ -306,23 +338,25 @@ export default function DonationForm({
 
         {showStatusField ? (
           <div>
-            <label className="label">Status</label>
+            <label htmlFor="status" className="label">Status</label>
             <select
+              id="status"
               className="input"
               value={form.status}
-            onChange={(event) => updateField("status", event.target.value as DonationStatus)}
-          >
-            <option value="available">available</option>
-            <option value="requested">requested</option>
-            <option value="completed">completed</option>
+              onChange={(event) => updateField("status", event.target.value as DonationStatus)}
+            >
+              <option value="available">available</option>
+              <option value="requested">requested</option>
+              <option value="completed">completed</option>
               <option value="cancelled">cancelled</option>
             </select>
           </div>
         ) : null}
       </div>
+      </fieldset>
 
       {error ? (
-        <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</p>
+        <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">{error}</p>
       ) : null}
 
       <button type="submit" className="btn-primary w-full sm:w-auto" disabled={loading}>

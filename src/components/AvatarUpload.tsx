@@ -70,17 +70,17 @@ export default function AvatarUpload({
   }
 
   return (
-    <div className="space-y-4 rounded-[1.9rem] border border-white/10 bg-white/[0.04] p-5">
+    <div className="space-y-4 rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] p-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="relative">
           {previewSrc ? (
             <img
               src={previewSrc}
               alt="Profile avatar preview"
-              className="h-24 w-24 rounded-full border border-white/10 object-cover shadow-[0_12px_28px_rgba(2,6,23,0.18)]"
+              className="h-20 w-20 rounded-lg border border-[#E5E7EB] object-cover"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 text-2xl font-semibold text-slate-950 shadow-[0_16px_28px_rgba(16,185,129,0.22)]">
+            <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-[#A5D6A7] text-2xl font-semibold text-[#1F2937]">
               {initials}
             </div>
           )}
@@ -88,7 +88,7 @@ export default function AvatarUpload({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="absolute -bottom-1 -right-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white bg-slate-950 text-white shadow-lg transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
+            className="absolute -bottom-1 -right-1 inline-flex h-9 w-9 items-center justify-center rounded-md border border-[#D1D5DB] bg-[#F8F6F0] text-[#1F2937] shadow-sm transition hover:bg-[#F3F4F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 disabled:cursor-not-allowed disabled:opacity-70"
             disabled={disabled || loading}
             aria-label="Choose avatar image"
           >
@@ -97,11 +97,11 @@ export default function AvatarUpload({
         </div>
 
         <div className="flex-1">
-          <p className="text-sm font-semibold text-white">Profile image</p>
-          <p className="mt-1 text-sm leading-6 text-slate-300">
+          <p className="text-sm font-semibold text-[#1F2937]">Profile image</p>
+          <p className="mt-1 text-sm leading-6 text-[#6B7280]">
             Upload a square-style JPG, PNG, or WebP image. Large avatars are compressed before saving.
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-[#6B7280]">
             Max raw file: {(IMAGE_LIMITS.avatarRawBytes / (1024 * 1024)).toFixed(1)} MB
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function AvatarUpload({
           <button
             type="button"
             onClick={handleRemove}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/30 hover:bg-rose-500/15 disabled:cursor-not-allowed disabled:opacity-70"
+            className="danger-button"
             disabled={disabled || loading}
           >
             <Trash2 className="h-4 w-4" />
@@ -141,7 +141,7 @@ export default function AvatarUpload({
       </div>
 
       {error ? (
-        <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+        <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">
           {error}
         </p>
       ) : null}

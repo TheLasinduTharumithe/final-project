@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getRoleRedirectPath,
@@ -37,10 +37,14 @@ export default function LoginPage() {
         return;
       }
 
-      const profile = await getUserProfile(firebaseUser.uid);
+      try {
+        const profile = await getUserProfile(firebaseUser.uid);
 
-      if (profile) {
-        router.replace(getRoleRedirectPath(profile.role));
+        if (profile) {
+          router.replace(getRoleRedirectPath(profile.role));
+        }
+      } catch {
+        return;
       }
     });
 
@@ -93,51 +97,43 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="glass-card relative overflow-hidden"
+          className="glass-card"
         >
-          <div className="hero-orb -left-12 top-0 h-44 w-44 bg-emerald-400/14" />
-          <div className="hero-orb bottom-0 right-0 h-56 w-56 bg-cyan-400/12" />
-          <div className="relative z-10">
-            <div className="section-kicker">
-              <Sparkles className="h-4 w-4" />
-              Welcome Back
-            </div>
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Sign in to manage donations and help more people.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
-              Restaurants can manage surplus food, charities can request safe pickups, and admins can maintain the full platform from one calm, modern workspace.
-            </p>
+          <p className="page-eyebrow">Workspace access</p>
+          <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#1F2937]">
+            Sign in to continue EcoPlate operations.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#6B7280]">
+            Use the same account your organization uses for donation, request, advertisement, or admin work.
+          </p>
 
-            <div className="mt-12 grid gap-4 sm:grid-cols-2">
-              {[
-                {
-                  title: "Role-Based Access",
-                  description: "Separate restaurant, charity, and admin experiences.",
-                  icon: ShieldCheck
-                },
-                {
-                  title: "Faster Coordination",
-                  description: "Move from donation listing to request handling with less friction.",
-                  icon: ArrowRight
-                }
-              ].map((item) => {
-                const Icon = item.icon;
+          <div className="mt-8 space-y-3">
+            {[
+              {
+                title: "Role-aware workspace",
+                description: "Restaurants, charities, and admins land in the workflow meant for them.",
+                icon: ShieldCheck
+              },
+              {
+                title: "Fast coordination",
+                description: "Move from donation listing to request handling with fewer steps.",
+                icon: ArrowRight
+              }
+            ].map((item) => {
+              const Icon = item.icon;
 
-                return (
-                  <div
-                    key={item.title}
-                    className="rounded-[1.75rem] border border-white/10 bg-white/[0.05] p-5"
-                  >
-                    <div className="feature-icon-wrap">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <h2 className="mt-5 text-lg font-semibold text-white">{item.title}</h2>
-                    <p className="mt-2 text-sm leading-7 text-slate-300">{item.description}</p>
+              return (
+                <div key={item.title} className="flex gap-3 rounded-md border border-[#E5E7EB] bg-[#FAFAF8] p-3">
+                  <div className="feature-icon-wrap">
+                    <Icon className="h-5 w-5" />
                   </div>
-                );
-              })}
-            </div>
+                  <div>
+                    <h2 className="text-sm font-semibold text-[#1F2937]">{item.title}</h2>
+                    <p className="mt-1 text-sm leading-6 text-[#6B7280]">{item.description}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -146,51 +142,50 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.04, ease: "easeOut" }}
           onSubmit={handleSubmit}
-          className="card relative overflow-hidden"
+          className="card"
         >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-500/12 to-transparent" />
-
           <div className="relative mb-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-300">
+            <p className="page-eyebrow">
               Login
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#1F2937]">
               Access your EcoPlate workspace
             </h2>
-            <p className="mt-3 text-sm leading-7 text-slate-300">
+            <p className="mt-3 text-sm leading-7 text-[#6B7280]">
               Continue with email and password or use Google for a quicker sign-in.
             </p>
           </div>
 
           <div className="mb-6">
-            <label className="label">Role</label>
-            <div className="grid grid-cols-2 gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-2">
+            <span className="label">Role</span>
+            <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#E5E7EB] bg-[#F8F6F0] p-1.5">
               {roleOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => setRole(option.value)}
-                  className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                  className={`rounded-md px-4 py-3 text-sm font-semibold transition ${
                     role === option.value
-                      ? "bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                      : "text-slate-400 hover:text-white"
+                      ? "rounded-md bg-[#2E7D32] text-white"
+                      : "rounded-md text-[#6B7280] hover:bg-[#F3F4F1] hover:text-[#1F2937]"
                   }`}
                 >
                   {option.label}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-[#6B7280]">
               The selected role is used if a Google account is signing in for the first time.
             </p>
           </div>
 
           <div className="space-y-5">
             <div>
-              <label className="label">Email</label>
+              <label htmlFor="loginEmail" className="label">Email</label>
               <div className="relative">
                 <Mail className="auth-icon" />
                 <input
+                  id="loginEmail"
                   type="email"
                   className="auth-input"
                   value={email}
@@ -201,10 +196,11 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="label">Password</label>
+              <label htmlFor="loginPassword" className="label">Password</label>
               <div className="relative">
                 <LockKeyhole className="auth-icon" />
                 <input
+                  id="loginPassword"
                   type={showPassword ? "text" : "password"}
                   className="auth-input"
                   value={password}
@@ -223,7 +219,7 @@ export default function LoginPage() {
             </div>
 
             {error ? (
-              <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+              <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">
                 {error}
               </p>
             ) : null}
@@ -234,10 +230,10 @@ export default function LoginPage() {
 
             <div className="relative py-1">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10" />
+                <div className="w-full border-t border-[#E5E7EB]" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-[rgba(16,34,53,0.95)] px-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                <span className="bg-white px-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">
                   Or
                 </span>
               </div>
@@ -247,7 +243,7 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading || googleLoading}
-              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex w-full items-center justify-center gap-3 rounded-md border border-[#E5E7EB] bg-[#F3F4F1] px-4 py-3 text-sm font-semibold text-[#1F2937] transition hover:border-[#D1D5DB] hover:bg-[#E5E7EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                 <path
@@ -270,9 +266,9 @@ export default function LoginPage() {
               {googleLoading ? "Connecting to Google..." : "Continue with Google"}
             </button>
 
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[#6B7280]">
               New to EcoPlate?{" "}
-              <Link href="/register" className="font-semibold text-emerald-300">
+              <Link href="/register" className="font-semibold text-[#2E7D32]">
                 Create an account
               </Link>
             </p>

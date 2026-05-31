@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Megaphone,
   MessageSquareText,
+  PlusCircle,
   ShieldCheck,
   Sparkles
 } from "lucide-react";
@@ -107,13 +108,13 @@ export default function Sidebar() {
   return (
     <aside className="sidebar-shell">
       <div className="flex h-full flex-col p-4">
-        <div className="surface-panel-soft px-4 py-4">
+        <div className="surface-panel-soft px-3 py-3">
           {loading ? (
             <div className="space-y-3">
-              <div className="h-12 w-12 animate-pulse rounded-full bg-white/[0.08]" />
+              <div className="h-11 w-11 animate-pulse rounded-md bg-[#E5E7EB]" />
               <div className="space-y-2">
-                <div className="h-4 w-28 animate-pulse rounded-full bg-white/[0.08]" />
-                <div className="h-3 w-20 animate-pulse rounded-full bg-white/[0.05]" />
+                <div className="h-4 w-28 animate-pulse rounded-md bg-[#E5E7EB]" />
+                <div className="h-3 w-20 animate-pulse rounded-md bg-[#F3F4F1]" />
               </div>
             </div>
           ) : user ? (
@@ -122,31 +123,43 @@ export default function Sidebar() {
                 <img
                   src={avatarSrc}
                   alt={`${user.name} avatar`}
-                  className="h-12 w-12 rounded-2xl border border-white/10 object-cover"
+                  className="h-11 w-11 rounded-md border border-[#E5E7EB] object-cover"
                 />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-400 text-sm font-semibold text-slate-950">
+                <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#A5D6A7] text-sm font-semibold text-[#1F5A24]">
                   {initials}
                 </div>
               )}
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-                <p className="mt-1 truncate text-xs uppercase tracking-[0.24em] text-emerald-300/80">
+                <p className="truncate text-sm font-semibold text-[#1F2937]">{user.name}</p>
+                <p className="mt-1 truncate text-xs uppercase tracking-[0.14em] text-[#2E7D32]">
                   {user.role}
                 </p>
               </div>
             </div>
           ) : (
             <div>
-              <p className="text-sm font-semibold text-white">EcoPlate Workspace</p>
-              <p className="mt-1 text-sm leading-6 text-slate-400">
+              <p className="text-sm font-semibold text-[#1F2937]">EcoPlate Workspace</p>
+              <p className="mt-1 text-sm leading-6 text-[#6B7280]">
                 Sign in to access the app workspace.
               </p>
             </div>
           )}
         </div>
 
-        <div className="mt-6">
+        {user?.role === "restaurant" ? (
+          <Link href="/donations/new" className="btn-primary mt-4 w-full">
+            <PlusCircle className="h-4 w-4" />
+            New Donation
+          </Link>
+        ) : user?.role === "admin" ? (
+          <Link href="/admin/pending-approvals" className="btn-secondary mt-4 w-full">
+            <ShieldCheck className="h-4 w-4" />
+            Pending Approvals
+          </Link>
+        ) : null}
+
+        <div className="mt-5">
           <p className="sidebar-section-title">Workspace</p>
           <div className="mt-3 space-y-1.5">
             {links.map((link, index) => {
@@ -165,7 +178,7 @@ export default function Sidebar() {
                     href={link.href}
                     className={`sidebar-link ${isActive ? "sidebar-link-active" : ""}`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     <span>{link.label}</span>
                   </Link>
                 </motion.div>
@@ -174,7 +187,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-5">
           <p className="sidebar-section-title">Explore</p>
           <div className="mt-3 space-y-2">
             <Link href="/ads" className="sidebar-link">

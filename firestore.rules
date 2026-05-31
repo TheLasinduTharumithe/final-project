@@ -20,6 +20,10 @@ service cloud.firestore {
       return userRole() == "admin";
     }
 
+    function isApproved() {
+      return isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && userDoc().data.approvalStatus == "approved");
+    }
+
     function isRestaurant() {
       return userRole() == "restaurant";
     }
@@ -35,7 +39,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow create: if isSignedIn() && request.auth.uid == userId;
-      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow read: if isSignedIn();
       allow update: if isSignedIn() &&
         (request.auth.uid == userId || isAdmin()) &&
         (
@@ -43,15 +47,17 @@ service cloud.firestore {
           (
             request.resource.data.id == resource.data.id &&
             request.resource.data.createdAt == resource.data.createdAt &&
-            request.resource.data.role == resource.data.role
+            request.resource.data.role == resource.data.role &&
+            request.resource.data.get("approvalStatus", "pending") == resource.data.get("approvalStatus", "pending") &&
+            request.resource.data.get("isApproved", false) == resource.data.get("isApproved", false)
           )
         );
       allow delete: if isAdmin();
     }
 
     match /donations/{donationId} {
-      allow read: if isSignedIn();
-      allow create: if isRestaurant() && request.resource.data.restaurantId == request.auth.uid;
+      allow read: if isSignedIn() && isApproved();
+      allow create: if isRestaurant() && isApproved() && request.resource.data.restaurantId == request.auth.uid;
       allow update: if isAdmin() ||
         (
           isRestaurant() &&
@@ -64,16 +70,17 @@ service cloud.firestore {
     }
 
     match /requests/{requestId} {
-      allow read: if isAdmin() ||
+      allow read: if isApproved() && (isAdmin() ||
         (isCharity() && resource.data.charityId == request.auth.uid) ||
-        (isRestaurant() && restaurantOwnsDonation(resource.data.donationId));
+        (isRestaurant() && resource.data.restaurantId == request.auth.uid));
 
-      allow create: if isCharity() && request.resource.data.charityId == request.auth.uid;
+      allow create: if isCharity() && isApproved() && request.resource.data.charityId == request.auth.uid;
 
       allow update: if isAdmin() ||
         (
           isRestaurant() &&
-          restaurantOwnsDonation(resource.data.donationId) &&
+          resource.data.restaurantId == request.auth.uid &&
+          request.resource.data.restaurantId == resource.data.restaurantId &&
           request.resource.data.donationId == resource.data.donationId &&
           request.resource.data.charityId == resource.data.charityId &&
           request.resource.data.message == resource.data.message &&

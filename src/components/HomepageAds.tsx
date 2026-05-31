@@ -63,7 +63,7 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
       : activeAd.description;
 
   return (
-    <div className="pointer-events-none fixed inset-x-4 bottom-4 z-40 sm:left-auto sm:right-4 sm:w-[24rem] lg:right-6 lg:top-[6.5rem] lg:bottom-auto lg:w-[25rem]">
+    <div className="pointer-events-none fixed bottom-4 right-4 z-40 hidden w-[24rem] sm:block lg:bottom-6 lg:right-6 lg:w-[25rem]">
       <AnimatePresence mode="wait">
         {isVisible ? (
           <motion.aside
@@ -73,10 +73,8 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
             exit={{ opacity: 0, y: 18 }}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="pointer-events-auto group relative overflow-hidden rounded-[26px] border border-white/10 bg-[rgba(11,27,43,0.92)] shadow-[0_24px_80px_rgba(2,6,23,0.34)] backdrop-blur-2xl sm:rounded-[28px]"
+            className="pointer-events-auto group relative overflow-hidden rounded-lg border border-[#E5E7EB] bg-white shadow-lg sm:rounded-lg"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(34,197,94,0.12),transparent_36%,rgba(6,182,212,0.12))]" />
-
             <div className="relative">
               {activeAd.imageUrl ? (
                 <img
@@ -86,12 +84,12 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
                   loading="lazy"
                 />
               ) : (
-                <div className="flex h-44 w-full items-center justify-center bg-white/[0.05] text-sm text-slate-400 sm:h-52 lg:h-44 xl:h-48">
+                <div className="flex h-44 w-full items-center justify-center bg-[#F8F6F0] text-sm text-[#6B7280] sm:h-52 lg:h-44 xl:h-48">
                   Advertisement image unavailable
                 </div>
               )}
 
-              <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-emerald-200 backdrop-blur">
+              <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-md border border-white/80 bg-white/90 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#2E7D32] shadow-sm backdrop-blur">
                 <Megaphone className="h-3.5 w-3.5" />
                 Featured Ad
               </div>
@@ -99,7 +97,7 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
               <button
                 type="button"
                 onClick={() => setDismissed(true)}
-                className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-950/70 text-slate-200 transition hover:bg-slate-900 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06121C]"
+                className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/80 bg-white/90 text-[#374151] shadow-sm transition hover:bg-[#F3F4F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 focus-visible:ring-offset-2"
                 aria-label="Dismiss featured ad"
               >
                 <X className="h-4 w-4" />
@@ -109,21 +107,21 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
             <div className="relative space-y-4 p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6B7280]">
                     Community Spotlight
                   </p>
-                  <h2 className="mt-2 break-words text-xl font-semibold text-white">
+                  <h2 className="mt-2 break-words text-xl font-semibold text-[#1F2937]">
                     {activeAd.title}
                   </h2>
                 </div>
                 {featuredAds.length > 1 ? (
-                  <div className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-300">
+                  <div className="shrink-0 rounded-md border border-[#E5E7EB] bg-[#FAFAF8] px-3 py-1 text-xs font-medium text-[#6B7280]">
                     {activeIndex + 1}/{featuredAds.length}
                   </div>
                 ) : null}
               </div>
 
-              <p className="text-sm leading-6 text-slate-300">{shortDescription}</p>
+              <p className="text-sm leading-6 text-[#6B7280]">{shortDescription}</p>
 
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                 <a
@@ -139,7 +137,7 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
                 </Link>
               </div>
 
-              <div className="flex flex-col gap-2 border-t border-white/10 pt-4 text-xs uppercase tracking-[0.2em] text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-2 border-t border-[#E5E7EB] pt-4 text-xs uppercase tracking-[0.2em] text-[#6B7280] sm:flex-row sm:items-center sm:justify-between">
                 <span>Visible for 1 minute</span>
                 <span>Returns automatically</span>
               </div>
@@ -154,13 +152,13 @@ export default function HomepageAds({ ads }: HomepageAdsProps) {
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             onClick={() => setIsVisible(true)}
-            className="pointer-events-auto inline-flex w-full items-center justify-between gap-3 rounded-[22px] border border-white/10 bg-[rgba(11,27,43,0.88)] px-4 py-3.5 text-left shadow-[0_20px_60px_rgba(2,6,23,0.28)] backdrop-blur-2xl sm:px-5"
+            className="pointer-events-auto inline-flex w-full items-center justify-between gap-3 rounded-lg border border-[#E5E7EB] bg-white px-4 py-3.5 text-left shadow-lg sm:px-5"
           >
-            <span className="inline-flex items-center gap-2 text-sm font-medium text-white">
-              <Megaphone className="h-4 w-4 text-emerald-300" />
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-[#1F2937]">
+              <Megaphone className="h-4 w-4 text-[#2E7D32]" />
               Featured ads are paused
             </span>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2E7D32]">
               Show now
             </span>
           </motion.button>

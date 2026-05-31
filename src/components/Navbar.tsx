@@ -11,6 +11,7 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  PlusCircle,
   MessageSquareText,
   ShieldCheck,
   Sparkles,
@@ -110,21 +111,25 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
 
   function linkClass(href: string) {
     const normalizedHref = href.split("#")[0];
-    return `nav-link ${pathname === normalizedHref ? "nav-link-active" : ""}`;
+    const isActive =
+      pathname === normalizedHref ||
+      (normalizedHref !== "/" && pathname.startsWith(`${normalizedHref}/`));
+
+    return `nav-link ${isActive ? "nav-link-active" : ""}`;
   }
 
   const avatarSrc = safePreviewSrc(user?.avatar64);
   const initials = getInitials(user?.name);
 
   return (
-    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
+    <header className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white/95 px-3 py-3 shadow-sm backdrop-blur sm:px-4 lg:px-6">
       <div className="mx-auto max-w-[96rem]">
-        <div className="surface-panel flex items-center justify-between gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-3.5 lg:px-6">
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <motion.div
               whileHover={{ scale: 1.03, rotate: -3 }}
               transition={{ type: "spring", stiffness: 260, damping: 18 }}
-              className="relative h-11 w-11 overflow-hidden rounded-[1.25rem] border border-white/10 bg-white/[0.06] shadow-[0_18px_34px_rgba(16,185,129,0.18)] sm:h-12 sm:w-12 sm:rounded-[1.35rem]"
+              className="relative h-10 w-10 overflow-hidden rounded-md border border-[#E5E7EB] bg-white sm:h-11 sm:w-11"
             >
               <Image
                 src="/og-image.jpg"
@@ -136,10 +141,10 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
               />
             </motion.div>
             <div className="min-w-0">
-              <p className="truncate text-xl font-semibold tracking-tight text-white sm:text-[1.38rem]">
+              <p className="truncate text-xl font-semibold tracking-tight text-[#1F2937] sm:text-[1.38rem]">
                 EcoPlate
               </p>
-              <p className="truncate text-xs text-slate-400 sm:text-sm">
+              <p className="hidden truncate text-xs text-[#6B7280] sm:block sm:text-sm">
                 Reduce waste. Feed communities.
               </p>
             </div>
@@ -164,8 +169,8 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
                 })}
               </div>
               <div className="hidden min-w-0 flex-1 items-center justify-center xl:flex">
-                <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 backdrop-blur">
-                  <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-emerald-300">
+                <div className="inline-flex items-center gap-2 rounded-md border border-[#E5E7EB] bg-[#FAFAF8] px-2 py-1.5">
+                  <span className="rounded-md border border-[#A5D6A7] bg-[#E8F5E9] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#1F5A24]">
                     {user.role === "admin" ? "Admin Workspace" : "Workspace"}
                   </span>
                   {sidebarCompanionLinks.map((link) => {
@@ -206,26 +211,26 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
 
           <div className="hidden shrink-0 items-center gap-2 lg:flex xl:gap-3">
             {loading ? (
-              <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-400">
+              <div className="rounded-full border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#6B7280]">
                 Loading...
               </div>
             ) : user ? (
               <>
-                <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 backdrop-blur">
+                <div className="inline-flex items-center gap-3 rounded-md border border-[#E5E7EB] bg-white px-3 py-2 shadow-sm">
                   {avatarSrc ? (
                     <img
                       src={avatarSrc}
                       alt={`${user.name} avatar`}
-                      className="h-9 w-9 rounded-full border border-white/10 object-cover"
+                      className="h-9 w-9 rounded-md border border-[#E5E7EB] object-cover"
                     />
                   ) : (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 text-sm font-semibold text-slate-950">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[#A5D6A7] text-sm font-semibold text-[#1F5A24]">
                       {initials}
                     </div>
                   )}
                   <div className="min-w-0 max-w-[140px] xl:max-w-[180px]">
-                    <p className="truncate text-sm font-medium text-white">{user.name}</p>
-                    <p className="truncate text-xs capitalize text-slate-400">{user.role}</p>
+                    <p className="truncate text-sm font-medium text-[#1F2937]">{user.name}</p>
+                    <p className="truncate text-xs capitalize text-[#6B7280]">{user.role}</p>
                   </div>
                 </div>
                 <button type="button" onClick={handleLogout} className="btn-secondary">
@@ -249,9 +254,10 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-white transition duration-300 hover:bg-white/[0.12] lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#D1D5DB] bg-white text-[#374151] transition hover:bg-[#F3F4F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E7D32]/30 lg:hidden"
             onClick={() => setMobileOpen((current) => !current)}
             aria-label="Toggle navigation"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -266,6 +272,13 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
               transition={{ duration: 0.24, ease: "easeOut" }}
               className="surface-panel mt-3 max-h-[calc(100vh-6.5rem)] overflow-y-auto px-3 py-3 sm:px-4 sm:py-4 lg:hidden"
             >
+              {user?.role === "restaurant" ? (
+                <Link href="/donations/new" className="btn-primary mb-3 w-full">
+                  <PlusCircle className="h-4 w-4" />
+                  New Donation
+                </Link>
+              ) : null}
+
               <div className="grid gap-2 sm:grid-cols-2">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
@@ -283,26 +296,26 @@ export default function Navbar({ workspaceMode = false }: { workspaceMode?: bool
                 })}
               </div>
 
-              <div className="mt-4 border-t border-white/10 pt-4">
+              <div className="mt-4 border-t border-[#E5E7EB] pt-4">
                 {loading ? (
-                  <p className="text-sm text-slate-400">Loading account...</p>
+                  <p className="text-sm text-[#6B7280]">Loading account...</p>
                 ) : user ? (
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    <div className="flex items-center gap-3 rounded-md border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3">
                       {avatarSrc ? (
                         <img
                           src={avatarSrc}
                           alt={`${user.name} avatar`}
-                          className="h-11 w-11 rounded-full border border-white/10 object-cover"
+                          className="h-11 w-11 rounded-md border border-[#E5E7EB] object-cover"
                         />
                       ) : (
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 text-sm font-semibold text-slate-950">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#A5D6A7] text-sm font-semibold text-[#1F5A24]">
                           {initials}
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-white">{user.name}</p>
-                        <p className="mt-1 text-xs uppercase tracking-[0.24em] text-emerald-300">
+                        <p className="truncate text-sm font-medium text-[#1F2937]">{user.name}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[#2E7D32]">
                           {user.role}
                         </p>
                       </div>

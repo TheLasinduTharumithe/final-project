@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Megaphone, PlusCircle } from "lucide-react";
 import AdCard from "@/components/AdCard";
+import { DashboardSkeleton, PageHeader, StatePanel } from "@/components/WorkspaceUI";
 import { subscribeToAuthState } from "@/lib/auth";
 import { getPublishedPaidAds } from "@/services/ads";
 import { getUserProfile } from "@/services/users";
@@ -45,47 +47,38 @@ export default function AdsPage() {
 
   return (
     <section className="page-shell">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Published Ads</p>
-          <h1 className="mt-3 text-4xl font-semibold text-white">
-            Restaurant promotions visible to all users
-          </h1>
-          <p className="mt-4 max-w-2xl text-slate-300">
-            EcoPlate only shows advertisements when payment is marked as paid and the ad status is published.
-          </p>
-        </div>
-
-        {profile?.role === "restaurant" ? (
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/ads/new" className="btn-primary">
-              Create Ad
-            </Link>
-            <Link href="/ads/my" className="btn-secondary">
-              My Ads
-            </Link>
-          </div>
-        ) : null}
-      </div>
+      <PageHeader
+        eyebrow="Published ads"
+        title="Restaurant promotions"
+        description="EcoPlate only shows advertisements when payment is paid and the ad status is published."
+        actions={
+          profile?.role === "restaurant" ? (
+            <>
+              <Link href="/ads/new" className="btn-primary">
+                <PlusCircle className="h-4 w-4" />
+                Create Ad
+              </Link>
+              <Link href="/ads/my" className="btn-secondary">
+                <Megaphone className="h-4 w-4" />
+                My Ads
+              </Link>
+            </>
+          ) : null
+        }
+      />
 
       {loading ? (
-        <div className="glass-card">
-          <p className="text-slate-300">Loading advertisements...</p>
-        </div>
+        <DashboardSkeleton />
       ) : error ? (
-        <div className="glass-card">
-          <p className="text-slate-300">{error}</p>
-        </div>
+        <StatePanel title="Could not load advertisements" message={error} tone="error" />
       ) : ads.length ? (
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {ads.map((ad) => (
             <AdCard key={ad.id} ad={ad} showMeta={false} />
           ))}
         </div>
       ) : (
-        <div className="glass-card">
-          <p className="text-slate-300">No published ads are available right now.</p>
-        </div>
+        <StatePanel title="No published ads" message="Published restaurant promotions will appear here." />
       )}
     </section>
   );

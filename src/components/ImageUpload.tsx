@@ -80,7 +80,7 @@ export default function ImageUpload({
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <label className="label mb-0">{label}</label>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-[#6B7280]">
           Max raw file: {(maxRawBytes / (1024 * 1024)).toFixed(0)} MB
         </span>
       </div>
@@ -95,15 +95,15 @@ export default function ImageUpload({
       />
 
       {previewSrc ? (
-        <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04]">
-          <div className="aspect-[16/10] overflow-hidden bg-[rgba(255,255,255,0.03)]">
+        <div className="overflow-hidden rounded-lg border border-[#E5E7EB] bg-white">
+          <div className="aspect-[16/10] overflow-hidden bg-[#F8F6F0]">
             <img src={previewSrc} alt={`${label} preview`} className="h-full w-full object-cover" />
           </div>
 
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Image ready</p>
-              <p className="mt-1 text-xs leading-6 text-slate-400">{helperText}</p>
+              <p className="text-sm font-medium text-[#1F2937]">Image ready</p>
+              <p className="mt-1 text-xs leading-6 text-[#6B7280]">{helperText}</p>
             </div>
 
             <div className="flex gap-2">
@@ -119,7 +119,7 @@ export default function ImageUpload({
               <button
                 type="button"
                 onClick={handleRemove}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/30 hover:bg-rose-500/15 disabled:cursor-not-allowed disabled:opacity-70"
+                className="danger-button"
                 disabled={disabled || loading}
               >
                 <Trash2 className="h-4 w-4" />
@@ -132,21 +132,21 @@ export default function ImageUpload({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex w-full flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-white/15 bg-white/[0.03] px-6 py-10 text-center transition hover:border-emerald-400/50 hover:bg-emerald-500/5 disabled:cursor-not-allowed disabled:opacity-70"
+          className="flex w-full flex-col items-center justify-center rounded-lg border border-dashed border-[#D1D5DB] bg-[#F8F6F0] px-6 py-10 text-center transition hover:border-[#A5D6A7] hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
           disabled={disabled || loading}
         >
-          <div className="feature-icon-wrap border-white/10 bg-white/[0.05] text-emerald-300">
+          <div className="feature-icon-wrap border-[#E5E7EB] bg-[#FAFAF8] text-[#2E7D32]">
             <ImagePlus className="h-5 w-5" />
           </div>
-          <p className="mt-4 text-sm font-semibold text-white">
+          <p className="mt-4 text-sm font-semibold text-[#1F2937]">
             {loading ? "Processing image..." : chooseLabel}
           </p>
-          <p className="mt-2 max-w-md text-sm leading-6 text-slate-400">{helperText}</p>
+          <p className="mt-2 max-w-md text-sm leading-6 text-[#6B7280]">{helperText}</p>
         </button>
       )}
 
       {error ? (
-        <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+        <p className="rounded-md border border-[#DC2626]/30 bg-[#FEE2E2] px-4 py-3 text-sm text-[#991B1B]" role="alert">
           {error}
         </p>
       ) : null}
