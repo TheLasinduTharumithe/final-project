@@ -1,3 +1,4 @@
+// Purpose: API route that sends donation notification emails to approved charities.
 import { NextResponse } from "next/server";
 import { getDonationNotificationHtml } from "@/templates/email/DonationNotification";
 import { getAdminDb } from "@/lib/firebase-admin";

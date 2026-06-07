@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Public advertisement listing page for approved restaurant promotions.
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Megaphone, PlusCircle } from "lucide-react";

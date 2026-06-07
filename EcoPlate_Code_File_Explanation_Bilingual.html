@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EcoPlate Code File Explanation - English and Sinhala</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Calibri, 'Nirmala UI', Arial, sans-serif; color: #1f2937; background: #ffffff; font-size: 11pt; line-height: 1.35; }
+  .cover { min-height: 88vh; display: flex; flex-direction: column; justify-content: center; border-bottom: 3px solid #2e7d32; margin-bottom: 18mm; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; color: #2e7d32; font-weight: 700; font-size: 9pt; margin: 0 0 10px; }
+  h1 { font-size: 30pt; line-height: 1.05; margin: 0; color: #123524; }
+  .subtitle { font-size: 13pt; color: #4b5563; margin: 16px 0 0; max-width: 680px; }
+  .meta { margin-top: 28px; padding: 14px 16px; border-left: 5px solid #a5d6a7; background: #f4fbf4; color: #374151; }
+  h2 { break-after: avoid; color: #2e74b5; font-size: 17pt; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #d7e4f2; }
+  h3 { margin: 0 0 7px; color: #0b2545; font-size: 11.5pt; font-family: Consolas, 'Courier New', monospace; overflow-wrap: anywhere; }
+  p { margin: 0 0 6px; }
+  a { color: #1f6f43; text-decoration: none; }
+  .toc { margin-top: 24px; columns: 2; }
+  .toc li { margin: 0 0 7px; }
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+  .summary div { border: 1px solid #d1d5db; border-radius: 6px; padding: 10px; background: #fafafa; }
+  .summary strong { display:block; font-size: 17pt; color:#2e7d32; }
+  section { page-break-inside: auto; }
+  .file-card { break-inside: avoid; display: grid; grid-template-columns: 34px 1fr; gap: 10px; border: 1px solid #d6dde6; border-radius: 7px; padding: 10px; margin: 0 0 9px; background: #ffffff; }
+  .file-index { width: 28px; height: 28px; border-radius: 50%; display:flex; align-items:center; justify-content:center; background:#e8f5e9; color:#1f5a24; font-weight:700; font-size: 9pt; }
+  .file-body { min-width: 0; }
+  .si { font-family: 'Nirmala UI', Calibri, Arial, sans-serif; }
+  .note { border: 1px solid #f1d08a; background: #fff8e6; border-radius: 6px; padding: 10px 12px; margin: 16px 0; }
+  footer { margin-top: 18px; color: #6b7280; font-size: 9pt; border-top: 1px solid #e5e7eb; padding-top: 8px; }
+  @media print { .cover { page-break-after: always; } .file-card { box-shadow: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="cover">
+      <p class="eyebrow">EcoPlate project documentation</p>
+      <h1>Code File Explanation<br>English and Sinhala</h1>
+      <p class="subtitle si">මෙම report එක EcoPlate project එකේ code files එකින් එක explain කරයි. It explains what each file does and when you should work on that file.</p>
+      <div class="summary">
+        <div><strong>62</strong>code files covered</div>
+        <div><strong>2</strong>languages: English + Sinhala</div>
+        <div><strong>0</strong>source-code behavior changes</div>
+      </div>
+      <div class="meta">
+        <p><strong>Project:</strong> EcoPlate food donation platform</p>
+        <p><strong>Stack:</strong> Next.js, React, TypeScript, Firebase, Tailwind CSS, Gemini, Brevo email</p>
+        <p class="si"><strong>සාරාංශය:</strong> Restaurants surplus food post කරන අතර charities pickup requests කරන platform එකකි. Admins approvals, ads, users, requests manage කරයි.</p>
+      </div>
+    </div>
+
+    <section>
+      <h2>Table of Contents</h2>
+      <ol class="toc"><li><a href="#Config-and-utilities">Config and utilities</a></li>
+<li><a href="#Shared-types-and-styles">Shared types and styles</a></li>
+<li><a href="#Library-helpers">Library helpers</a></li>
+<li><a href="#Firestore-services">Firestore services</a></li>
+<li><a href="#Email-template">Email template</a></li>
+<li><a href="#App-routes-and-pages">App routes and pages</a></li>
+<li><a href="#API-routes">API routes</a></li>
+<li><a href="#Components">Components</a></li></ol>
+      <div class="note si"><strong>Note:</strong> මෙම PDF එක documentation artifact එකක් පමණි. Project source code files වෙනස් කර නැත.</div>
+    </section>
+
+    <section id="Config-and-utilities"><h2>Config and utilities</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>check-users.js</h3>
+        <p><strong>English:</strong> Developer utility for checking Firebase user records during local troubleshooting.</p>
+        <p class="si"><strong>සිංහල:</strong> Firebase user records local testing/troubleshooting වෙලාවේ පරීක්ෂා කිරීමට භාවිතා කරන developer utility file එක.</p>
+        <p><strong>What to do here:</strong> Use this when you need to quickly inspect user data outside the normal UI.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Normal UI එකෙන් පිටත user data ඉක්මනින් බලන්න අවශ්‍ය නම් මෙය භාවිතා කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>firestore.rules</h3>
+        <p><strong>English:</strong> Firestore security rules that control who can read or write EcoPlate database collections.</p>
+        <p class="si"><strong>සිංහල:</strong> EcoPlate Firestore database collections කියවීම සහ ලිවීම කාටද අවසර දෙනවාද කියන security rules මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Edit only when changing database permissions or role-based access.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Database permissions හෝ role-based access වෙනස් කරන විට පමණක් update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">3</div>
+      <div class="file-body">
+        <h3>storage.rules</h3>
+        <p><strong>English:</strong> Firebase Storage rules that protect uploaded files and enforce basic upload limits.</p>
+        <p class="si"><strong>සිංහල:</strong> Upload කරන files ආරක්ෂා කර upload limits enforce කරන Firebase Storage rules මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Use this when upload access, authentication, or file-size rules need changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Upload access, authentication, file size limits වෙනස් කළ යුතු නම් මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">4</div>
+      <div class="file-body">
+        <h3>next.config.ts</h3>
+        <p><strong>English:</strong> Next.js configuration for image domains and application build/runtime settings.</p>
+        <p class="si"><strong>සිංහල:</strong> Next.js app එකේ image domains සහ build/runtime settings define කරන configuration file එක.</p>
+        <p><strong>What to do here:</strong> Change this when adding remote image sources or Next.js-level settings.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Remote images allow කරන්න හෝ Next.js settings වෙනස් කරන්න අවශ්‍ය නම් මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">5</div>
+      <div class="file-body">
+        <h3>next-env.d.ts</h3>
+        <p><strong>English:</strong> Generated Next.js TypeScript declaration file that enables Next.js types in the project.</p>
+        <p class="si"><strong>සිංහල:</strong> Next.js TypeScript types project එකට enable කරන generated declaration file එක.</p>
+        <p><strong>What to do here:</strong> Do not manually edit; Next.js maintains it automatically.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Manual edit කරන්න එපා; Next.js automatically maintain කරන file එකක්.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">6</div>
+      <div class="file-body">
+        <h3>postcss.config.js</h3>
+        <p><strong>English:</strong> PostCSS configuration that loads Tailwind CSS and Autoprefixer.</p>
+        <p class="si"><strong>සිංහල:</strong> Tailwind CSS සහ Autoprefixer load කරන PostCSS configuration file එක.</p>
+        <p><strong>What to do here:</strong> Change only if the CSS processing pipeline changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> CSS processing pipeline එක වෙනස් කරන විට පමණක් update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">7</div>
+      <div class="file-body">
+        <h3>tailwind.config.ts</h3>
+        <p><strong>English:</strong> Tailwind configuration for scanned source paths and custom theme tokens.</p>
+        <p class="si"><strong>සිංහල:</strong> Tailwind scan කරන source paths සහ custom theme settings define කරන file එක.</p>
+        <p><strong>What to do here:</strong> Use this for design tokens, colors, spacing, fonts, or content scan paths.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Colors, spacing, fonts, design tokens, content paths වෙනස් කරන්න මෙය භාවිතා කරන්න.</p>
+      </div>
+    </article></section>
+<section id="Shared-types-and-styles"><h2>Shared types and styles</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/types/index.ts</h3>
+        <p><strong>English:</strong> Shared TypeScript models for users, donations, requests, ads, roles, and statuses.</p>
+        <p class="si"><strong>සිංහල:</strong> Users, donations, requests, ads, roles, statuses සඳහා shared TypeScript models මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Update this first when the shape of project data changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Project data structure වෙනස් වුනොත් මුලින්ම මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/styles/globals.css</h3>
+        <p><strong>English:</strong> Global Tailwind layers, base styles, reusable classes, and app-wide visual rules.</p>
+        <p class="si"><strong>සිංහල:</strong> Global Tailwind layers, base styles, reusable classes, app-wide UI styling මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Use this for shared visual styles used across many pages/components.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Pages/components කිහිපයකම භාවිතා වන shared styles වෙනස් කිරීමට මෙය භාවිතා කරන්න.</p>
+      </div>
+    </article></section>
+<section id="Library-helpers"><h2>Library helpers</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/lib/firebase.ts</h3>
+        <p><strong>English:</strong> Client-side Firebase initialization for app, authentication, Firestore, and Storage.</p>
+        <p class="si"><strong>සිංහල:</strong> Client side Firebase app, Auth, Firestore, Storage initialize කරන file එක.</p>
+        <p><strong>What to do here:</strong> Change only when Firebase client configuration or exported Firebase services change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Firebase client config හෝ exported services වෙනස් කළ යුතු විට පමණක් update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/lib/firebase-admin.ts</h3>
+        <p><strong>English:</strong> Server-side Firebase Admin setup for privileged API routes.</p>
+        <p class="si"><strong>සිංහල:</strong> Privileged API routes සඳහා server-side Firebase Admin setup කරන file එක.</p>
+        <p><strong>What to do here:</strong> Use this when server routes need admin database access.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Server routes වලට admin database access අවශ්‍ය නම් මෙය භාවිතා/update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">3</div>
+      <div class="file-body">
+        <h3>src/lib/auth.ts</h3>
+        <p><strong>English:</strong> Authentication helpers for registration, login, Google sign-in, logout, and role redirects.</p>
+        <p class="si"><strong>සිංහල:</strong> Registration, login, Google sign-in, logout, role redirect logic මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Edit when changing sign-in rules, approval checks, or where users go after login.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Sign-in rules, approval checks, login පසු redirect path වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">4</div>
+      <div class="file-body">
+        <h3>src/lib/gemini.ts</h3>
+        <p><strong>English:</strong> Google Gemini wrapper that creates general and database-grounded chat responses.</p>
+        <p class="si"><strong>සිංහල:</strong> General chat සහ database facts මත පදනම් වූ answers සෑදීමට Google Gemini wrapper එක.</p>
+        <p><strong>What to do here:</strong> Use this when changing AI model prompts, language handling, or Gemini calls.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> AI prompts, language handling, Gemini calls වෙනස් කරන්න මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">5</div>
+      <div class="file-body">
+        <h3>src/lib/image.ts</h3>
+        <p><strong>English:</strong> Image validation, resizing, compression, base64 conversion, and avatar initials helpers.</p>
+        <p class="si"><strong>සිංහල:</strong> Images validate, resize, compress, base64 convert කරන සහ avatar initials generate කරන helpers මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Edit when upload limits or image processing behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Upload limits හෝ image processing behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">6</div>
+      <div class="file-body">
+        <h3>src/lib/chat-format.ts</h3>
+        <p><strong>English:</strong> Formatting helpers that turn database records into readable chat facts.</p>
+        <p class="si"><strong>සිංහල:</strong> Database records readable chat facts ලෙස format කරන helper file එක.</p>
+        <p><strong>What to do here:</strong> Use this when changing how chatbot database facts are displayed.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chatbot database facts display කරන ආකාරය වෙනස් කිරීමට මෙය භාවිතා කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">7</div>
+      <div class="file-body">
+        <h3>src/lib/chat-intents.ts</h3>
+        <p><strong>English:</strong> Intent detection logic that decides what kind of question the chatbot received.</p>
+        <p class="si"><strong>සිංහල:</strong> Chatbot එකට ලැබුණු question එකේ intent/type එක හඳුනාගන්න logic මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Edit when adding new chatbot question categories or keywords.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> නව chatbot question categories හෝ keywords එකතු කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">8</div>
+      <div class="file-body">
+        <h3>src/lib/chat-language.ts</h3>
+        <p><strong>English:</strong> Language detection and localization helpers for English, Sinhala, and mixed chat replies.</p>
+        <p class="si"><strong>සිංහල:</strong> English, Sinhala, mixed chat replies සඳහා language detection/localization helpers මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Use this when changing chatbot language behavior or localized messages.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chatbot language behavior හෝ localized messages වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">9</div>
+      <div class="file-body">
+        <h3>src/lib/email/nodemailer.ts</h3>
+        <p><strong>English:</strong> Nodemailer transport configuration for email sending.</p>
+        <p class="si"><strong>සිංහල:</strong> Emails send කිරීමට Nodemailer transport setup කරන file එක.</p>
+        <p><strong>What to do here:</strong> Change this when SMTP settings or mail transport configuration changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> SMTP settings හෝ mail transport config වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">10</div>
+      <div class="file-body">
+        <h3>src/lib/email/mailer.ts</h3>
+        <p><strong>English:</strong> Higher-level email helper functions for sending donation-related email.</p>
+        <p class="si"><strong>සිංහල:</strong> Donation-related emails send කිරීම සඳහා higher-level email helper functions මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Use this when changing email sending flow or message composition.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Email sending flow හෝ message composition වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+<section id="Firestore-services"><h2>Firestore services</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/services/donations.ts</h3>
+        <p><strong>English:</strong> Donation data service for creating, updating, deleting, listing, subscribing, and expiring donation records.</p>
+        <p class="si"><strong>සිංහල:</strong> Donation records create, update, delete, list, realtime subscribe, expire කරන Firestore service එක.</p>
+        <p><strong>What to do here:</strong> Work here when changing donation lifecycle rules, availability filters, or expiry logic.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation lifecycle rules, available filters, expiry logic වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/services/requests.ts</h3>
+        <p><strong>English:</strong> Charity pickup request service for creating, approving, rejecting, and listing donation requests.</p>
+        <p class="si"><strong>සිංහල:</strong> Charity pickup requests create, approve, reject, list කරන service file එක.</p>
+        <p><strong>What to do here:</strong> Edit when request validation, approval, or quantity deduction behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Request validation, approval, quantity deduction behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">3</div>
+      <div class="file-body">
+        <h3>src/services/users.ts</h3>
+        <p><strong>English:</strong> User profile service for account creation, approvals, role filtering, stats, and realtime pending queues.</p>
+        <p class="si"><strong>සිංහල:</strong> User profiles create, approve/reject, role filter, stats, pending users realtime listener logic මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Use this when changing user approval or profile management behavior.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> User approval හෝ profile management behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">4</div>
+      <div class="file-body">
+        <h3>src/services/ads.ts</h3>
+        <p><strong>English:</strong> Advertisement service for submitted, approved, paid, and published restaurant ads.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurant ads submit, approve, paid, publish status handle කරන Firestore service එක.</p>
+        <p><strong>What to do here:</strong> Edit when ad review, payment status, or public ad visibility rules change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Ad review, payment status, public visibility rules වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">5</div>
+      <div class="file-body">
+        <h3>src/services/chatbot.ts</h3>
+        <p><strong>English:</strong> Chatbot service that verifies users, reads Firestore through REST, builds facts, and asks Gemini for final answers.</p>
+        <p class="si"><strong>සිංහල:</strong> Users verify කර Firestore REST හරහා data කියවා facts build කර Gemini final answer ලබාගන්න chatbot service එක.</p>
+        <p><strong>What to do here:</strong> Use this when adding chatbot database abilities, role restrictions, or new fact sources.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chatbot database abilities, role restrictions, new fact sources එකතු කිරීමට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+<section id="Email-template"><h2>Email template</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/templates/email/DonationNotification.ts</h3>
+        <p><strong>English:</strong> HTML email template sent to charities when a new food donation becomes available.</p>
+        <p class="si"><strong>සිංහල:</strong> New food donation available වූ විට charities වෙත යවන HTML email template එක.</p>
+        <p><strong>What to do here:</strong> Edit when changing donation notification email design or wording.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation notification email design හෝ wording වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+<section id="App-routes-and-pages"><h2>App routes and pages</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/app/layout.tsx</h3>
+        <p><strong>English:</strong> Root layout that applies metadata, global CSS, navigation shell, and shared app structure.</p>
+        <p class="si"><strong>සිංහල:</strong> Metadata, global CSS, navigation shell, shared app structure apply කරන root layout file එක.</p>
+        <p><strong>What to do here:</strong> Use this for app-wide layout, metadata, fonts, or provider-level changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> App-wide layout, metadata, fonts, providers වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/app/page.tsx</h3>
+        <p><strong>English:</strong> Public homepage describing EcoPlate and showing published paid ads.</p>
+        <p class="si"><strong>සිංහල:</strong> EcoPlate ගැන public homepage එක සහ published paid ads පෙන්වන page එක.</p>
+        <p><strong>What to do here:</strong> Edit when changing the landing/home content, sections, or homepage ad display.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Home page content, sections, homepage ad display වෙනස් කිරීමට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">3</div>
+      <div class="file-body">
+        <h3>src/app/login/page.tsx</h3>
+        <p><strong>English:</strong> Login page for email/password and Google authentication.</p>
+        <p class="si"><strong>සිංහල:</strong> Email/password සහ Google authentication සඳහා login page එක.</p>
+        <p><strong>What to do here:</strong> Use this when changing login form UI or authentication flow messages.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Login form UI හෝ authentication flow messages වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">4</div>
+      <div class="file-body">
+        <h3>src/app/register/page.tsx</h3>
+        <p><strong>English:</strong> Registration page for restaurants and charities, including profile details and documents.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurants සහ charities registration සඳහා profile details සහ documents collect කරන page එක.</p>
+        <p><strong>What to do here:</strong> Edit when adding registration fields, validation, or onboarding text.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Registration fields, validation, onboarding text එකතු/වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">5</div>
+      <div class="file-body">
+        <h3>src/app/dashboard/page.tsx</h3>
+        <p><strong>English:</strong> Role-aware dashboard that shows summaries and shortcuts for restaurants, charities, and admins.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurants, charities, admins සඳහා role-aware summaries සහ shortcuts පෙන්වන dashboard page එක.</p>
+        <p><strong>What to do here:</strong> Use this when dashboard metrics, cards, or role-specific actions change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Dashboard metrics, cards, role-specific actions වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">6</div>
+      <div class="file-body">
+        <h3>src/app/profile/page.tsx</h3>
+        <p><strong>English:</strong> Profile page for viewing and updating the current user account details.</p>
+        <p class="si"><strong>සිංහල:</strong> Current user account details බලන්න සහ update කරන්න ඇති profile page එක.</p>
+        <p><strong>What to do here:</strong> Edit when profile fields, avatar handling, or account display needs changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Profile fields, avatar handling, account display වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">7</div>
+      <div class="file-body">
+        <h3>src/app/chat/page.tsx</h3>
+        <p><strong>English:</strong> Chat page that hosts the EcoPlate AI assistant interface.</p>
+        <p class="si"><strong>සිංහල:</strong> EcoPlate AI assistant interface එක render කරන chat page එක.</p>
+        <p><strong>What to do here:</strong> Use this when changing the page wrapper around the chat experience.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chat experience එක වටා ඇති page wrapper වෙනස් කිරීමට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">8</div>
+      <div class="file-body">
+        <h3>src/app/donations/page.tsx</h3>
+        <p><strong>English:</strong> Donation listing page for browsing available food donations.</p>
+        <p class="si"><strong>සිංහල:</strong> Available food donations browse කිරීමට donation listing page එක.</p>
+        <p><strong>What to do here:</strong> Edit when changing donation filters, list UI, or request entry points.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation filters, list UI, request entry points වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">9</div>
+      <div class="file-body">
+        <h3>src/app/donations/new/page.tsx</h3>
+        <p><strong>English:</strong> Donation creation page used by restaurants to post surplus food.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurants surplus food post කිරීමට භාවිතා කරන donation creation page එක.</p>
+        <p><strong>What to do here:</strong> Use this when the create-donation workflow changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Create-donation workflow වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">10</div>
+      <div class="file-body">
+        <h3>src/app/donations/[id]/page.tsx</h3>
+        <p><strong>English:</strong> Donation detail page for viewing one donation and requesting pickup.</p>
+        <p class="si"><strong>සිංහල:</strong> Single donation details බලන්න සහ pickup request කරන්න ඇති page එක.</p>
+        <p><strong>What to do here:</strong> Edit when detail display, request actions, or donation-specific interactions change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Detail display, request actions, donation-specific interactions වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">11</div>
+      <div class="file-body">
+        <h3>src/app/requests/page.tsx</h3>
+        <p><strong>English:</strong> Request management page for charities, restaurants, and admins to track pickup requests.</p>
+        <p class="si"><strong>සිංහල:</strong> Charities, restaurants, admins pickup requests track/manage කරන requests page එක.</p>
+        <p><strong>What to do here:</strong> Use this when request tables, status actions, or role-specific views change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Request tables, status actions, role-specific views වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">12</div>
+      <div class="file-body">
+        <h3>src/app/ads/page.tsx</h3>
+        <p><strong>English:</strong> Public page listing approved and paid restaurant advertisements.</p>
+        <p class="si"><strong>සිංහල:</strong> Approved සහ paid restaurant advertisements public ලෙස පෙන්වන page එක.</p>
+        <p><strong>What to do here:</strong> Edit when public ad browsing layout or filtering changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Public ad browsing layout හෝ filtering වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">13</div>
+      <div class="file-body">
+        <h3>src/app/ads/new/page.tsx</h3>
+        <p><strong>English:</strong> Advertisement creation page where restaurants submit promotions.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurants තම promotions submit කරන advertisement creation page එක.</p>
+        <p><strong>What to do here:</strong> Use this when ad submission flow or validation changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Ad submission flow හෝ validation වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">14</div>
+      <div class="file-body">
+        <h3>src/app/ads/my/page.tsx</h3>
+        <p><strong>English:</strong> Restaurant page for viewing and managing its submitted advertisements.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurant එක submit කළ advertisements view/manage කරන page එක.</p>
+        <p><strong>What to do here:</strong> Edit when restaurant ad management actions or statuses change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Restaurant ad management actions හෝ statuses වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">15</div>
+      <div class="file-body">
+        <h3>src/app/admin/page.tsx</h3>
+        <p><strong>English:</strong> Admin dashboard for platform statistics, moderation, approvals, ads, and oversight.</p>
+        <p class="si"><strong>සිංහල:</strong> Platform statistics, moderation, approvals, ads, oversight සඳහා admin dashboard එක.</p>
+        <p><strong>What to do here:</strong> Use this when admin metrics, moderation links, or platform overview changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Admin metrics, moderation links, platform overview වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">16</div>
+      <div class="file-body">
+        <h3>src/app/admin/ads/page.tsx</h3>
+        <p><strong>English:</strong> Admin advertisement moderation page for approval, payment, and publishing status.</p>
+        <p class="si"><strong>සිංහල:</strong> Ads approval, payment, publishing status manage කරන admin ad moderation page එක.</p>
+        <p><strong>What to do here:</strong> Edit when ad admin actions or review workflow changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Ad admin actions හෝ review workflow වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">17</div>
+      <div class="file-body">
+        <h3>src/app/admin/pending-approvals/page.tsx</h3>
+        <p><strong>English:</strong> Admin page for reviewing pending restaurant and charity accounts.</p>
+        <p class="si"><strong>සිංහල:</strong> Pending restaurant සහ charity accounts review කරන admin page එක.</p>
+        <p><strong>What to do here:</strong> Use this when user approval/rejection UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> User approval/rejection UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+<section id="API-routes"><h2>API routes</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/app/api/chat/route.ts</h3>
+        <p><strong>English:</strong> Server API route that receives chat messages and returns chatbot answers.</p>
+        <p class="si"><strong>සිංහල:</strong> Chat messages receive කර chatbot answers return කරන server API route එක.</p>
+        <p><strong>What to do here:</strong> Edit when the chat request/response contract or error handling changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chat request/response contract හෝ error handling වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/app/api/send-donation-email/route.ts</h3>
+        <p><strong>English:</strong> Server API route that sends donation notification emails to approved charities through Brevo.</p>
+        <p class="si"><strong>සිංහල:</strong> Brevo හරහා approved charities වෙත donation notification emails යවන server API route එක.</p>
+        <p><strong>What to do here:</strong> Use this when email notification logic, recipient selection, or Brevo settings change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Email notification logic, recipient selection, Brevo settings වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+<section id="Components"><h2>Components</h2>
+    <article class="file-card">
+      <div class="file-index">1</div>
+      <div class="file-body">
+        <h3>src/components/AppShell.tsx</h3>
+        <p><strong>English:</strong> Shared application shell that wraps protected workspace pages with common layout.</p>
+        <p class="si"><strong>සිංහල:</strong> Protected workspace pages common layout එකක wrap කරන shared application shell component එක.</p>
+        <p><strong>What to do here:</strong> Edit when workspace layout structure changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Workspace layout structure වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">2</div>
+      <div class="file-body">
+        <h3>src/components/Navbar.tsx</h3>
+        <p><strong>English:</strong> Responsive top navigation with auth-aware links and role actions.</p>
+        <p class="si"><strong>සිංහල:</strong> Auth-aware links සහ role actions සහිත responsive top navigation component එක.</p>
+        <p><strong>What to do here:</strong> Use this when top navigation links, menus, or auth display changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Top navigation links, menus, auth display වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">3</div>
+      <div class="file-body">
+        <h3>src/components/Sidebar.tsx</h3>
+        <p><strong>English:</strong> Role-aware sidebar navigation for workspace pages.</p>
+        <p class="si"><strong>සිංහල:</strong> Workspace pages සඳහා role-aware sidebar navigation component එක.</p>
+        <p><strong>What to do here:</strong> Edit when dashboard/workspace navigation items change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Dashboard/workspace navigation items වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">4</div>
+      <div class="file-body">
+        <h3>src/components/ProtectedRoute.tsx</h3>
+        <p><strong>English:</strong> Route guard that checks authentication, role access, and approval state before showing protected content.</p>
+        <p class="si"><strong>සිංහල:</strong> Protected content පෙන්වීමට පෙර authentication, role access, approval state check කරන route guard එක.</p>
+        <p><strong>What to do here:</strong> Use this when access control or protected-page redirects change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Access control හෝ protected-page redirects වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">5</div>
+      <div class="file-body">
+        <h3>src/components/WorkspaceUI.tsx</h3>
+        <p><strong>English:</strong> Reusable workspace UI primitives such as headers, panels, metrics, and state messages.</p>
+        <p class="si"><strong>සිංහල:</strong> Headers, panels, metrics, state messages වැනි reusable workspace UI primitives මෙහි තියෙනවා.</p>
+        <p><strong>What to do here:</strong> Edit when shared dashboard UI patterns need changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Shared dashboard UI patterns වෙනස් කිරීමට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">6</div>
+      <div class="file-body">
+        <h3>src/components/DonationForm.tsx</h3>
+        <p><strong>English:</strong> Form used for creating and editing food donation records with image, map, schedule, and status inputs.</p>
+        <p class="si"><strong>සිංහල:</strong> Image, map, schedule, status inputs සමඟ food donation records create/edit කරන form component එක.</p>
+        <p><strong>What to do here:</strong> Use this when donation form fields, validation, or submission behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation form fields, validation, submission behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">7</div>
+      <div class="file-body">
+        <h3>src/components/DonationCard.tsx</h3>
+        <p><strong>English:</strong> Reusable card that displays a donation summary in lists and dashboards.</p>
+        <p class="si"><strong>සිංහල:</strong> Lists සහ dashboards තුළ donation summary පෙන්වන reusable card component එක.</p>
+        <p><strong>What to do here:</strong> Edit when donation card layout or displayed fields change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation card layout හෝ displayed fields වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">8</div>
+      <div class="file-body">
+        <h3>src/components/DonationLocationMap.tsx</h3>
+        <p><strong>English:</strong> Read-only Leaflet map for showing a donation pickup location.</p>
+        <p class="si"><strong>සිංහල:</strong> Donation pickup location පෙන්වන read-only Leaflet map component එක.</p>
+        <p><strong>What to do here:</strong> Use this when display-map behavior or map styling changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Display-map behavior හෝ map styling වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">9</div>
+      <div class="file-body">
+        <h3>src/components/LocationPickerMap.tsx</h3>
+        <p><strong>English:</strong> Interactive Leaflet map for selecting pickup coordinates and optionally using browser geolocation.</p>
+        <p class="si"><strong>සිංහල:</strong> Pickup coordinates select කරන්න සහ browser geolocation භාවිතා කරන්න ඇති interactive Leaflet map component එක.</p>
+        <p><strong>What to do here:</strong> Edit when map picking, marker handling, or current-location behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Map picking, marker handling, current-location behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">10</div>
+      <div class="file-body">
+        <h3>src/components/ImageUpload.tsx</h3>
+        <p><strong>English:</strong> Image upload component that previews, validates, compresses, and returns base64 images.</p>
+        <p class="si"><strong>සිංහල:</strong> Images preview, validate, compress කර base64 ලෙස return කරන image upload component එක.</p>
+        <p><strong>What to do here:</strong> Use this when donation/ad image upload UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Donation/ad image upload UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">11</div>
+      <div class="file-body">
+        <h3>src/components/AvatarUpload.tsx</h3>
+        <p><strong>English:</strong> Avatar upload component for validating and previewing compressed profile pictures.</p>
+        <p class="si"><strong>සිංහල:</strong> Profile pictures validate, preview, compress කරන avatar upload component එක.</p>
+        <p><strong>What to do here:</strong> Edit when profile avatar upload behavior or UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Profile avatar upload behavior හෝ UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">12</div>
+      <div class="file-body">
+        <h3>src/components/FileUpload.tsx</h3>
+        <p><strong>English:</strong> Generic file upload control for selecting and validating document files.</p>
+        <p class="si"><strong>සිංහල:</strong> Document files select/validate කිරීමට generic file upload control එක.</p>
+        <p><strong>What to do here:</strong> Use this when license/document upload rules or UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> License/document upload rules හෝ UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">13</div>
+      <div class="file-body">
+        <h3>src/components/RequestCard.tsx</h3>
+        <p><strong>English:</strong> Reusable card for showing pickup request details, status, and available actions.</p>
+        <p class="si"><strong>සිංහල:</strong> Pickup request details, status, available actions පෙන්වන reusable card component එක.</p>
+        <p><strong>What to do here:</strong> Edit when request cards or request action buttons change.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Request cards හෝ request action buttons වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">14</div>
+      <div class="file-body">
+        <h3>src/components/AdForm.tsx</h3>
+        <p><strong>English:</strong> Advertisement form used by restaurants to submit promotion details and images.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurants promotion details සහ images submit කිරීමට භාවිතා කරන advertisement form component එක.</p>
+        <p><strong>What to do here:</strong> Use this when ad fields, validation, or submit UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Ad fields, validation, submit UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">15</div>
+      <div class="file-body">
+        <h3>src/components/AdCard.tsx</h3>
+        <p><strong>English:</strong> Reusable card for showing restaurant advertisement information.</p>
+        <p class="si"><strong>සිංහල:</strong> Restaurant advertisement information පෙන්වන reusable card component එක.</p>
+        <p><strong>What to do here:</strong> Edit when ad card visual layout or metadata changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Ad card visual layout හෝ metadata වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">16</div>
+      <div class="file-body">
+        <h3>src/components/HomepageAds.tsx</h3>
+        <p><strong>English:</strong> Homepage carousel/section for displaying published paid advertisements.</p>
+        <p class="si"><strong>සිංහල:</strong> Homepage එකේ published paid advertisements පෙන්වන carousel/section component එක.</p>
+        <p><strong>What to do here:</strong> Use this when homepage ad rotation or display behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Homepage ad rotation හෝ display behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">17</div>
+      <div class="file-body">
+        <h3>src/components/ChatBox.tsx</h3>
+        <p><strong>English:</strong> Chat UI component that sends messages to the chat API and renders replies.</p>
+        <p class="si"><strong>සිංහල:</strong> Chat API වෙත messages send කර replies render කරන chat UI component එක.</p>
+        <p><strong>What to do here:</strong> Edit when chat input, message display, loading, or error UI changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Chat input, message display, loading, error UI වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article>
+
+    <article class="file-card">
+      <div class="file-index">18</div>
+      <div class="file-body">
+        <h3>src/components/ExpirationService.tsx</h3>
+        <p><strong>English:</strong> Client-side service component that triggers expired donation cleanup after login.</p>
+        <p class="si"><strong>සිංහල:</strong> Login පසු expired donations cleanup trigger කරන client-side service component එක.</p>
+        <p><strong>What to do here:</strong> Use this when expiry cleanup timing or role behavior changes.</p>
+        <p class="si"><strong>මෙම file එකේ වැඩ කරන අවස්ථාව:</strong> Expiry cleanup timing හෝ role behavior වෙනස් කරන විට මෙය update කරන්න.</p>
+      </div>
+    </article></section>
+
+    <footer>Generated for EcoPlate project documentation. English and Sinhala explanations are intentionally concise for quick revision.</footer>
+  </main>
+</body>
+</html>

@@ -1,3 +1,4 @@
+// Purpose: API route that sends user messages through the EcoPlate chatbot service.
 import { NextResponse } from "next/server";
 import { getChatbotAnswer, resolveChatUser } from "@/services/chatbot";
 

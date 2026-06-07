@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Responsive top navigation with auth-aware links and role actions.
+
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";

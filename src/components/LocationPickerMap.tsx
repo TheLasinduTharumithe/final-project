@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Interactive Leaflet map used to choose a pickup latitude and longitude.
+
 import dynamic from "next/dynamic";
 import type { LeafletMouseEvent } from "leaflet";
 import { LocateFixed, MapPin } from "lucide-react";
@@ -28,6 +30,7 @@ function MapLoadingState() {
 
 const ClientLocationPickerMap = dynamic<LocationPickerMapInnerProps>(
   async () => {
+    // Leaflet depends on browser globals, so the map module is loaded client-side only.
     const { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } = await import(
       "react-leaflet"
     );
@@ -67,6 +70,7 @@ const ClientLocationPickerMap = dynamic<LocationPickerMapInnerProps>(
         const map = useMap();
 
         useEffect(() => {
+          // When coordinates change from geolocation or props, keep the marker in view.
           if (typeof latitude === "number" && typeof longitude === "number") {
             map.flyTo([latitude, longitude], Math.max(map.getZoom(), 14), {
               duration: 0.75
@@ -164,6 +168,7 @@ export default function LocationPickerMap(props: LocationPickerMapProps) {
   useEffect(() => {
     let isActive = true;
 
+    // Leaflet's default marker assets need explicit URLs in bundled Next.js builds.
     import("leaflet")
       .then((leaflet) => {
         if (!isActive) {
@@ -194,6 +199,7 @@ export default function LocationPickerMap(props: LocationPickerMapProps) {
       return;
     }
 
+    // Browser geolocation is optional; users can still click the map if permission fails.
     setGeolocationLoading(true);
     setGeolocationError("");
 

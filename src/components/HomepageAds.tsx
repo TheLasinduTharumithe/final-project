@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Homepage advertisement carousel for published paid promotions.
+
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Megaphone, Phone, X } from "lucide-react";

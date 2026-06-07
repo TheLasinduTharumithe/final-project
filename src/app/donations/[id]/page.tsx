@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Donation detail page for viewing and requesting a specific donation.
+
 import { ImageIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

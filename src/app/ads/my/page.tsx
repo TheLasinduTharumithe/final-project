@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Restaurant advertisement dashboard for managing submitted promotions.
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";

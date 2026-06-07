@@ -1,3 +1,4 @@
+// Purpose: Tailwind theme configuration and scan paths for the EcoPlate UI.
 import type { Config } from "tailwindcss";
 
 const config: Config = {

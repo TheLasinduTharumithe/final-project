@@ -1,3 +1,5 @@
+/* Purpose: Global Tailwind layers, design tokens, and reusable utility classes. */
+
 @import "leaflet/dist/leaflet.css";
 
 @tailwind base;

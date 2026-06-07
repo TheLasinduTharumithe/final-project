@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Advertisement creation page for restaurant promotion submissions.
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdForm, { type AdFormValues } from "@/components/AdForm";

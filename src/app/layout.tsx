@@ -1,3 +1,4 @@
+// Purpose: Root Next.js layout that wires global styles, metadata, and shared shell UI.
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import type { ReactNode } from "react";

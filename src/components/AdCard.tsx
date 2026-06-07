@@ -1,3 +1,4 @@
+// Purpose: Reusable card for displaying restaurant advertisement details.
 import type { Ad } from "@/types";
 
 interface AdCardProps {

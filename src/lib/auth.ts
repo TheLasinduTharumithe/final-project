@@ -1,3 +1,4 @@
+// Purpose: Authentication helpers that translate Firebase users into app profiles and roles.
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -25,6 +26,7 @@ interface RegisterInput {
 
 type PublicRole = Exclude<UserRole, "admin">;
 
+// Google sign-in can create a profile even when Firebase has no display details yet.
 function buildGoogleFallbackProfile(user: User, role: PublicRole): AppUser {
   return {
     id: user.uid,
@@ -43,6 +45,7 @@ export async function registerUser(input: RegisterInput): Promise<AppUser> {
   const credential = await createUserWithEmailAndPassword(auth, input.email, input.password);
 
   try {
+    // Public registrations are stored as pending until an admin approves the profile.
     const userProfile: AppUser = {
       id: credential.user.uid,
       name: input.name,
@@ -65,6 +68,7 @@ export async function registerUser(input: RegisterInput): Promise<AppUser> {
     if (error instanceof Error && error.message.includes("waiting for admin approval")) {
       throw error;
     }
+    // If profile creation fails, remove the Auth user so there is no orphaned login account.
     await deleteUser(credential.user).catch(() => null);
     throw error;
   }
@@ -74,6 +78,7 @@ export async function loginUser(email: string, password: string): Promise<AppUse
   const credential = await signInWithEmailAndPassword(auth, email, password);
   const profile = await getUserProfile(credential.user.uid);
 
+  // Auth success is not enough; EcoPlate requires a matching Firestore profile.
   if (!profile) {
     await auth.signOut();
     throw new Error("Your account profile is missing. Please contact the admin.");
@@ -96,6 +101,7 @@ export async function signInWithGoogle(role: PublicRole): Promise<AppUser> {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
 
+  // Existing Google users follow the same approval gates as email/password users.
   const credential = await signInWithPopup(auth, provider);
   const existingProfile = await getUserProfile(credential.user.uid);
 
@@ -114,6 +120,7 @@ export async function signInWithGoogle(role: PublicRole): Promise<AppUser> {
 
   const newProfile = buildGoogleFallbackProfile(credential.user, role);
   await createUserProfile(newProfile);
+  // New Google registrations are signed out until an admin approves them.
   await auth.signOut();
   throw new Error("Registration successful. Your account is waiting for admin approval.");
 }

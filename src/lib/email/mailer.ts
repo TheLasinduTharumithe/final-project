@@ -1,3 +1,4 @@
+// Purpose: Email composition and delivery helpers for donation notifications.
 import nodemailer from "nodemailer";
 
 /**

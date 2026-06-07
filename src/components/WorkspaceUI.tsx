@@ -1,3 +1,4 @@
+// Purpose: Shared workspace UI primitives for headers, panels, metrics, and states.
 import type { ReactNode } from "react";
 import { AlertCircle, Loader2, Search } from "lucide-react";
 

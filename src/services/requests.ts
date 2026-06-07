@@ -1,3 +1,4 @@
+// Purpose: Firestore data access helpers for charity pickup request workflows.
 import {
   addDoc,
   collection,
@@ -16,10 +17,12 @@ import type { Donation, DonationRequest } from "@/types";
 
 const requestsCollection = collection(db, "requests");
 
+// Request lists use the same newest-first order across dashboards.
 function sortByNewest(items: DonationRequest[]) {
   return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+// Adds the Firestore document id to the stored request fields.
 function mapRequest(snapshot: QueryDocumentSnapshot<DocumentData>) {
   return {
     id: snapshot.id,
@@ -30,6 +33,7 @@ function mapRequest(snapshot: QueryDocumentSnapshot<DocumentData>) {
 export async function createDonationRequest(
   data: Omit<DonationRequest, "id" | "status" | "createdAt" | "restaurantId">
 ) {
+  // A charity can only have one active request for the same donation.
   const existingRequests = await getDocs(
     query(
       requestsCollection,
@@ -46,6 +50,7 @@ export async function createDonationRequest(
     throw new Error("You have already requested this donation.");
   }
 
+  // The transaction makes the availability checks and request creation atomic.
   await runTransaction(db, async (transaction) => {
     const donationRef = doc(db, "donations", data.donationId);
     const donationSnapshot = await transaction.get(donationRef);
@@ -76,6 +81,7 @@ export async function createDonationRequest(
       throw new Error("Cannot request more than the remaining quantity.");
     }
 
+    // restaurantId is copied to the request so restaurant dashboards can query directly.
     const newRequestRef = doc(requestsCollection);
     transaction.set(newRequestRef, {
       ...data,
@@ -111,6 +117,7 @@ export async function getRequestsForRestaurant(restaurantId: string) {
 export async function approveRequest(requestId: string) {
   const requestRef = doc(db, "requests", requestId);
 
+  // Approval consumes remaining donation quantity and updates both documents together.
   await runTransaction(db, async (transaction) => {
     const requestSnapshot = await transaction.get(requestRef);
 
@@ -151,6 +158,7 @@ export async function approveRequest(requestId: string) {
     const newRemaining = donation.remainingQuantity - requestedQty;
     const newRequested = (donation.requestedQuantity || 0) + requestedQty;
 
+    // When nothing remains, the donation is completed automatically.
     transaction.update(requestRef, { status: "approved" });
     transaction.update(donationRef, {
       remainingQuantity: newRemaining,
@@ -163,6 +171,7 @@ export async function approveRequest(requestId: string) {
 export async function rejectRequest(requestId: string) {
   const requestRef = doc(db, "requests", requestId);
 
+  // Rejection only changes the request status; donation quantities stay untouched.
   await runTransaction(db, async (transaction) => {
     const requestSnapshot = await transaction.get(requestRef);
 
@@ -216,6 +225,7 @@ export function subscribeToRequestsByCharity(charityId: string, callback: (reque
 }
 
 export function subscribeToRequestsForRestaurant(restaurantId: string, callback: (requests: DonationRequest[]) => void) {
+  // Placeholder kept for future realtime restaurant request support.
   // This requires fetching all donations first. For a true real-time setup, we'd need a Cloud Function or denormalized data.
   // We'll approximate it by fetching donations, then subscribing to requests where donationId is in the list.
   // Wait, "in" query supports up to 10. If more than 10 donations, we have to split.

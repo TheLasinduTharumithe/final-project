@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Admin advertisement moderation page for approval and payment status updates.
+
 import { useEffect, useState } from "react";
 import AdCard from "@/components/AdCard";
 import ProtectedRoute from "@/components/ProtectedRoute";

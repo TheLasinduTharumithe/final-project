@@ -1,3 +1,4 @@
+// Purpose: AI assistant page that hosts the EcoPlate chat experience.
 import ChatBox from "@/components/ChatBox";
 
 export default function ChatPage() {

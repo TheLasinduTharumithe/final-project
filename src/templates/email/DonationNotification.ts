@@ -1,3 +1,4 @@
+// Purpose: HTML email template for notifying charities about donation activity.
 // NOTE: safe for both Next.js server + client
 
 interface DonationEmailData {

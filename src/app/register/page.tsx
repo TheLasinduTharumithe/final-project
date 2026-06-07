@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Registration page for creating restaurant and charity accounts.
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";

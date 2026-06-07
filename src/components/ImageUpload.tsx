@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Image upload control that previews and compresses donation photos.
+
 import { ImagePlus, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import {

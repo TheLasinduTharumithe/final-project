@@ -1,3 +1,4 @@
+// Purpose: Server-side Firebase Admin initialization for privileged API routes.
 import * as admin from "firebase-admin";
 
 /**

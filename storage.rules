@@ -1,3 +1,4 @@
+// Purpose: Firebase Storage rules that keep uploads authenticated and size-limited.
 rules_version = '2';
 
 service firebase.storage {

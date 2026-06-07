@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Login page for authenticating restaurants, charities, and admins.
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";

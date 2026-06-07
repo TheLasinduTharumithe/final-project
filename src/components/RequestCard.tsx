@@ -1,3 +1,4 @@
+// Purpose: Reusable card for displaying charity pickup request status and actions.
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Clock3, MessageSquareText, XCircle } from "lucide-react";
 import type { DonationRequest } from "@/types";

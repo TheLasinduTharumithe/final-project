@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Application shell that surrounds protected pages with shared navigation layout.
+
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";

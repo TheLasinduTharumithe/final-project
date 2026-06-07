@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: User profile page for viewing and updating account details.
+
 import { updateEmail } from "firebase/auth";
 import { useEffect, useState } from "react";
 import AvatarUpload from "@/components/AvatarUpload";

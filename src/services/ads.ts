@@ -1,3 +1,4 @@
+// Purpose: Firestore data access helpers for restaurant advertisements.
 import {
   addDoc,
   collection,
@@ -14,10 +15,12 @@ import type { Ad, AdPaymentStatus, AdStatus } from "@/types";
 
 const adsCollection = collection(db, "ads");
 
+// Advertisement cards and admin tables share newest-first ordering.
 function sortByNewest(items: Ad[]) {
   return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+// Adds the Firestore document id to each ad payload.
 function mapAd(snapshot: QueryDocumentSnapshot<DocumentData>) {
   return {
     id: snapshot.id,
@@ -28,6 +31,7 @@ function mapAd(snapshot: QueryDocumentSnapshot<DocumentData>) {
 export async function createAd(
   data: Omit<Ad, "id" | "paymentStatus" | "status" | "createdAt">
 ) {
+  // Newly submitted ads enter both review and payment workflows in pending state.
   const payload = {
     ...data,
     paymentStatus: "pending" as AdPaymentStatus,
@@ -53,6 +57,7 @@ export async function getAdsByRestaurant(restaurantId: string) {
 }
 
 export async function getPublishedPaidAds() {
+  // Public surfaces only show promotions that are both paid and explicitly published.
   const snapshot = await getDocs(
     query(
       adsCollection,

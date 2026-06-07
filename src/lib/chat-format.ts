@@ -1,3 +1,4 @@
+// Purpose: Formatting helpers that normalize assistant replies for the chat UI.
 import type { Ad, AppUser, Donation, DonationRequest, UserRole } from "@/types";
 
 const DEFAULT_LIMIT = 5;

@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Donation creation page for restaurants posting surplus food.
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DonationForm, { type DonationFormValues } from "@/components/DonationForm";

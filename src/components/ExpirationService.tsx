@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Client-side service component that marks expired donations after login.
+
 import { useEffect } from "react";
 import { cleanupExpiredDonations } from "@/services/donations";
 import { subscribeToAuthState } from "@/lib/auth";

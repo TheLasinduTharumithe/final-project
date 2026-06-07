@@ -1,5 +1,7 @@
+// Purpose: Image compression and validation helpers for browser uploads.
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
+// Raw upload and stored base64 limits keep Firestore documents within practical size bounds.
 export const IMAGE_LIMITS = {
   donationRawBytes: 2 * 1024 * 1024,
   avatarRawBytes: 1.5 * 1024 * 1024,
@@ -142,6 +144,7 @@ function getResizeDimensions(width: number, height: number, maxWidth: number, ma
     return { width, height };
   }
 
+  // Preserve aspect ratio while fitting inside the configured bounding box.
   const ratio = Math.min(maxWidth / width, maxHeight / height);
 
   return {
@@ -153,6 +156,7 @@ function getResizeDimensions(width: number, height: number, maxWidth: number, ma
 async function resizeImageToBase64(file: File, options: ProcessImageOptions) {
   const originalDataUrl = await readFileAsDataUrl(file);
   const image = await loadImage(originalDataUrl);
+  // Canvas does the actual resize/compression before the image is saved as a data URL.
   const { width, height } = getResizeDimensions(
     image.width,
     image.height,
@@ -183,6 +187,7 @@ async function resizeImageToBase64(file: File, options: ProcessImageOptions) {
 }
 
 async function processImageFile(file: File, options: ProcessImageOptions) {
+  // Validate before opening the image so obviously invalid uploads fail quickly.
   const typeError = validateImageType(file);
 
   if (typeError) {

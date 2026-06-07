@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Donation listing page for browsing available food donations.
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";

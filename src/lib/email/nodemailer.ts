@@ -1,3 +1,4 @@
+// Purpose: Nodemailer transport setup for sending transactional email.
 import nodemailer from "nodemailer";
 
 interface SendEmailOptions {

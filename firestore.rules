@@ -1,3 +1,4 @@
+// Purpose: Firestore security rules that enforce role-based access for EcoPlate data.
 rules_version = '2';
 
 service cloud.firestore {

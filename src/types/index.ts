@@ -1,3 +1,4 @@
+// Purpose: Shared TypeScript models and status constants used across the app.
 export type UserRole = "restaurant" | "charity" | "admin";
 export const USER_ROLES: UserRole[] = ["restaurant", "charity", "admin"];
 

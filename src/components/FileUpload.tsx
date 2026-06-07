@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Generic file upload control for validating selected documents.
+
 import { useRef, useState } from "react";
 import { UploadCloud, X, File as FileIcon } from "lucide-react";
 

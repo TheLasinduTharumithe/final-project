@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Request management page for tracking pickup requests by role.
+
 import { useEffect, useState } from "react";
 import RequestCard from "@/components/RequestCard";
 import ProtectedRoute from "@/components/ProtectedRoute";

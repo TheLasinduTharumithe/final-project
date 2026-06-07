@@ -1,3 +1,4 @@
+// Purpose: Firestore data access helpers for donation lifecycle operations.
 import {
   addDoc,
   collection,
@@ -23,10 +24,12 @@ import {
 const donationsCollection = collection(db, "donations");
 const requestsCollection = collection(db, "requests");
 
+// Keep UI lists stable by always showing the newest records first.
 function sortByNewest(items: Donation[]) {
   return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+// Firestore snapshots are converted into the app's typed Donation shape here.
 function mapDonation(snapshot: QueryDocumentSnapshot<DocumentData>) {
   return {
     id: snapshot.id,
@@ -34,6 +37,7 @@ function mapDonation(snapshot: QueryDocumentSnapshot<DocumentData>) {
   } as Donation;
 }
 
+// Status values are centralized in types so writes cannot drift from the UI contract.
 function ensureValidDonationStatus(status: DonationStatus) {
   if (!DONATION_STATUSES.includes(status)) {
     throw new Error("Invalid donation status.");
@@ -46,8 +50,7 @@ export async function createDonation(data: CreateDonationPayload | DonationFormV
   ensureValidDonationStatus(data.status);
   const createdAt = "createdAt" in data && data.createdAt ? data.createdAt : new Date().toISOString();
 
-  // If expiryDate is in YYYY-MM-DDTHH:MM format, parse it to ISO
-  // If it's not present, just use a fallback (e.g., 24h from now)
+  // Normalize the form datetime into an ISO value that can be compared lexicographically.
   let expiresAt = "";
   if (data.expiryDate) {
     try {
@@ -59,6 +62,7 @@ export async function createDonation(data: CreateDonationPayload | DonationFormV
     expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   }
 
+  // Older callers may only send quantity, so derived counters are filled here.
   const payload = {
     ...data,
     totalQuantity: "totalQuantity" in data && data.totalQuantity !== undefined ? data.totalQuantity : Number((data as any).quantity) || 0,
@@ -89,6 +93,7 @@ export async function deleteDonation(donationId: string) {
   const donation = await getDonationById(donationId);
   if (!donation) return;
 
+  // Donations with pickup requests are preserved for auditability and should be cancelled instead.
   const relatedRequests = await getDocs(
     query(
       requestsCollection, 
@@ -137,6 +142,7 @@ export async function getAvailableDonations() {
     query(donationsCollection, where("status", "==", "available"))
   );
 
+  // Firestore rules stay simple; expiry is filtered in application code.
   const now = new Date().toISOString();
   const donations = snapshot.docs
     .map(mapDonation)
@@ -181,6 +187,7 @@ export async function findDonationsByFoodName(foodName: string) {
 export function subscribeToAvailableDonations(callback: (donations: Donation[]) => void) {
   const q = query(donationsCollection, where("status", "==", "available"));
   return onSnapshot(q, (snapshot) => {
+    // Realtime listeners also hide expired donations before updating the UI.
     const now = new Date().toISOString();
     const donations = snapshot.docs
       .map(mapDonation)
@@ -219,6 +226,7 @@ export async function cleanupExpiredDonations(userId?: string, role?: string) {
 
   let donationsToProcess: QueryDocumentSnapshot<DocumentData>[] = [];
 
+  // Admins can process all available donations; restaurants can only process their own.
   if (role === "admin") {
     const snapshot = await getDocs(query(donationsCollection, where("status", "==", "available")));
     donationsToProcess = snapshot.docs;
@@ -239,6 +247,7 @@ export async function cleanupExpiredDonations(userId?: string, role?: string) {
 
   if (expiredDocs.length === 0) return;
 
+  // Expired donations remain in Firestore with a status change rather than being deleted.
   await Promise.all(expiredDocs.map(docSnapshot => 
     updateDoc(doc(db, "donations", docSnapshot.id), { status: "expired" })
   ));

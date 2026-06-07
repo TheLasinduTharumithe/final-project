@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Chat interface component for sending messages to the assistant API.
+
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
 

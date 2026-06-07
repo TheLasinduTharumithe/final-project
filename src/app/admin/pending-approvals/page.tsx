@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Admin account approval page for reviewing restaurant and charity registrations.
+
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, FileIcon } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";

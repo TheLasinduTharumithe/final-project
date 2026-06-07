@@ -1,3 +1,4 @@
+// Purpose: Google Gemini client wrapper used by the EcoPlate chat assistant.
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { buildLanguageInstruction, type ChatLanguageMode } from "@/lib/chat-language";
 

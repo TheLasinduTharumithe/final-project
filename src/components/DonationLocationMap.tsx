@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Read-only map component for showing donation pickup locations.
+
 import dynamic from "next/dynamic";
 import { LocateFixed, MapPin, Route } from "lucide-react";
 import { useEffect, useState } from "react";

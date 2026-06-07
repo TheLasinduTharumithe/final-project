@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Route guard that blocks protected pages until auth and role checks pass.
+
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { subscribeToAuthState } from "@/lib/auth";
@@ -23,6 +25,7 @@ export default function ProtectedRoute({ children, allowedRoles, requireApproval
   useEffect(() => {
     let isActive = true;
 
+    // Auth state can change after mount, so the guard subscribes instead of checking once.
     const unsubscribe = subscribeToAuthState(async (firebaseUser) => {
       if (!isActive) {
         return;
@@ -51,6 +54,7 @@ export default function ProtectedRoute({ children, allowedRoles, requireApproval
       }
 
       if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
+        // Authenticated users are redirected to the workspace that matches their role.
         router.replace(userProfile.role === "admin" ? "/admin" : "/dashboard");
         setIsChecking(false);
         return;
@@ -81,6 +85,7 @@ export default function ProtectedRoute({ children, allowedRoles, requireApproval
   }
 
   if (requireApproval && profile.role !== "admin" && profile.approvalStatus !== "approved") {
+    // Pending accounts can authenticate, but cannot access approval-gated workflows yet.
     return (
       <div className="page-shell">
         <div className="card max-w-xl text-center">

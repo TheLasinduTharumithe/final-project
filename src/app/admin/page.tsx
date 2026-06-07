@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Admin dashboard for platform-wide approvals, metrics, and moderation.
+
 import Link from "next/link";
 import {
   BarChart3,

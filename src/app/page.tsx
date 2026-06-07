@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Public homepage that explains EcoPlate flows and highlights published ads.
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";

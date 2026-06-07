@@ -1,3 +1,4 @@
+// Purpose: Language detection and response helpers for localized chat handling.
 export type ChatLanguageMode = "sinhala" | "english" | "mixed";
 
 const sinhalaUnicodePattern = /[\u0D80-\u0DFF]/;

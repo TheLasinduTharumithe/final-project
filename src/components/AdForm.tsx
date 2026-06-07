@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Advertisement form component used for restaurant promotion submissions.
+
 import { useState } from "react";
 import ImageUpload from "@/components/ImageUpload";
 

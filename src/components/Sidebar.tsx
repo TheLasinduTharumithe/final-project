@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Role-aware sidebar navigation for the workspace experience.
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {

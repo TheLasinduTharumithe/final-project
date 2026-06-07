@@ -1,3 +1,4 @@
+// Purpose: Reusable donation summary card for lists and dashboards.
 import Link from "next/link";
 import { ArrowRight, CalendarClock, ImageIcon, MapPin, Package } from "lucide-react";
 import { safePreviewSrc } from "@/lib/image";

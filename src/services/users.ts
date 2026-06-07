@@ -1,3 +1,4 @@
+// Purpose: Firestore user profile, approval, and role-management helpers.
 import {
   collection,
   deleteDoc,
@@ -15,6 +16,7 @@ import { USER_ROLES, type AppUser, type AppUserFormValues, type UserRole } from 
 
 const usersCollection = collection(db, "users");
 
+// User documents are keyed by Firebase Auth uid and mirrored into AppUser objects.
 function mapUser(snapshot: Awaited<ReturnType<typeof getDoc>>) {
   return {
     id: snapshot.id,
@@ -22,6 +24,7 @@ function mapUser(snapshot: Awaited<ReturnType<typeof getDoc>>) {
   } as AppUser;
 }
 
+// Role validation protects admin-only role names from accidental public writes.
 function ensureValidUserRole(role: UserRole) {
   if (!USER_ROLES.includes(role)) {
     throw new Error("Invalid user role.");
@@ -31,6 +34,7 @@ function ensureValidUserRole(role: UserRole) {
 export async function createUserProfile(user: AppUser | AppUserFormValues) {
   ensureValidUserRole(user.role);
 
+  // New profiles default to the current timestamp when registration did not provide one.
   const payload: AppUser = {
     ...user,
     createdAt: user.createdAt || new Date().toISOString()
@@ -90,6 +94,7 @@ export async function getUserSystemStats() {
 }
 
 export async function approveUser(userId: string) {
+  // Both fields are kept because older UI paths read isApproved while newer paths read approvalStatus.
   await updateDoc(doc(db, "users", userId), {
     approvalStatus: "approved",
     isApproved: true
@@ -104,6 +109,7 @@ export async function rejectUser(userId: string) {
 }
 
 export async function getPendingUsers() {
+  // Query by approvalStatus first, then filter roles in memory to avoid a composite index requirement.
   const q = query(
     usersCollection,
     where("approvalStatus", "==", "pending")
@@ -118,6 +124,7 @@ export async function getPendingUsers() {
 }
 
 export function subscribeToPendingUsers(callback: (users: AppUser[]) => void) {
+  // Admin pages use this listener so approval queues update without a manual refresh.
   const q = query(
     usersCollection,
     where("approvalStatus", "==", "pending")

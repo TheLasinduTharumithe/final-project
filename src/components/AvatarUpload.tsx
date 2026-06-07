@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Avatar upload control that validates and stores compressed profile images.
+
 import { Camera, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import {

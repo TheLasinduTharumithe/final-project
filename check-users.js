@@ -1,3 +1,4 @@
+// Purpose: Developer utility for checking Firebase user records during local troubleshooting.
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, getDocs } = require('firebase/firestore');
 

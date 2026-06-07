@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Role-aware dashboard showing donation, request, and admin summaries.
+
 import Link from "next/link";
 import {
   ArrowRight,

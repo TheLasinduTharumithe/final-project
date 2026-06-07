@@ -1,5 +1,7 @@
 "use client";
 
+// Purpose: Donation form component for creating and editing food donation records.
+
 import { CalendarDays, Clock3 } from "lucide-react";
 import { useRef, useState } from "react";
 import ImageUpload from "@/components/ImageUpload";
@@ -41,6 +43,7 @@ const defaultValues: DonationFormValues = {
   locationText: ""
 };
 
+// Form inputs split datetime values so native date and time pickers can be used separately.
 function getDatePart(value: string) {
   return value?.includes("T") ? value.split("T")[0] : "";
 }
@@ -61,6 +64,7 @@ function combineDateAndTime(date: string, time: string) {
   return `${date}T${time}`;
 }
 
+// The visible icon buttons focus the hidden/native picker controls where supported.
 function openNativePicker(input: HTMLInputElement | null) {
   if (!input) {
     return;
@@ -97,6 +101,7 @@ export default function DonationForm({
   const expiryDateRef = useRef<HTMLInputElement | null>(null);
   const expiryTimeRef = useRef<HTMLInputElement | null>(null);
 
+  // Keep field updates type-safe while using one handler for many inputs.
   function updateField<K extends keyof DonationFormValues>(key: K, value: DonationFormValues[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
@@ -108,6 +113,7 @@ export default function DonationForm({
     const pickupTime = combineDateAndTime(pickupDate, pickupClock);
     const expiryDate = combineDateAndTime(expiryCalendarDate, expiryClock);
 
+    // A donation cannot be saved without both map coordinates and schedule details.
     if (
       !form.foodName ||
       !form.quantity ||
