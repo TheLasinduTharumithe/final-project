@@ -5,6 +5,7 @@
 import Link from "next/link";
 import {
   BarChart3,
+  FileIcon,
   HandHeart,
   Loader2,
   Megaphone,
@@ -105,6 +106,25 @@ export default function AdminDashboardPage() {
   const totalPaidAds = ads.filter((ad) => ad.paymentStatus === "paid").length;
   const totalPendingApprovals = users.filter((user) => user.approvalStatus === "pending").length;
   const totalPendingAds = ads.filter((ad) => ad.status === "pending").length;
+  const licenseReviewUsers = users.filter(
+    (user) => user.role === "restaurant" || user.role === "charity"
+  );
+
+  const openDocument = (base64Data: string) => {
+    if (!base64Data) {
+      alert("No document uploaded by this user.");
+      return;
+    }
+
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.document.write(
+        `<iframe src="${base64Data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
+      );
+    } else {
+      alert("Popup blocked. Cannot view document.");
+    }
+  };
 
   async function handleDeleteUser(user: AppUser) {
     if (user.id === adminId) {
@@ -210,6 +230,10 @@ export default function AdminDashboardPage() {
                 <Users2 className="h-4 w-4" />
                 Manage Users
               </Link>
+              <Link href="/admin#licenses" className="btn-secondary">
+                <FileIcon className="h-4 w-4" />
+                Review Licenses
+              </Link>
               <Link href="/admin#donations" className="btn-secondary">
                 <HandHeart className="h-4 w-4" />
                 Manage Donations
@@ -306,6 +330,66 @@ export default function AdminDashboardPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div id="licenses" className="card scroll-mt-28">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-semibold text-[#1F2937]">License Review</h2>
+                  <p className="mt-1 text-sm text-[#6B7280]">
+                    Reopen uploaded licenses and certificates for restaurant and charity accounts.
+                  </p>
+                </div>
+                <span className="status-badge">{licenseReviewUsers.length} total</span>
+              </div>
+
+              <div className="mt-5 space-y-4">
+                {licenseReviewUsers.length ? (
+                  licenseReviewUsers.map((user) => {
+                    const documentLabel =
+                      user.role === "restaurant" ? "View License" : "View Certificate";
+
+                    return (
+                      <div
+                        key={user.id}
+                        className="flex flex-col justify-between gap-4 rounded-lg border border-[#E5E7EB] bg-[#FAFAF8] px-4 py-3 md:flex-row md:items-center"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-medium text-[#1F2937]">{user.name}</p>
+                            <span className="status-badge">{user.role}</span>
+                            <span className="status-badge">
+                              {user.approvalStatus || "pending"}
+                            </span>
+                          </div>
+                          <p className="mt-1 truncate text-sm text-[#6B7280]">{user.email}</p>
+                          <p className="mt-1 truncate text-sm text-[#6B7280]">
+                            {user.licenseFileName || "No document uploaded"}
+                          </p>
+                        </div>
+
+                        {user.licenseFile ? (
+                          <button
+                            type="button"
+                            onClick={() => openDocument(user.licenseFile || "")}
+                            className="btn-secondary shrink-0"
+                          >
+                            <FileIcon className="h-4 w-4" />
+                            {documentLabel}
+                          </button>
+                        ) : (
+                          <p className="text-sm text-[#DC2626]">No document uploaded.</p>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <StatePanel
+                    title="No restaurant or charity users"
+                    message="License and certificate uploads will appear here once accounts are registered."
+                  />
+                )}
               </div>
             </div>
 
